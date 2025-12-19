@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { PollCard } from './PollCard';
 
 // Define Interface locally or import (duplication to be safe from import errors)
+// Interface Update
 interface Poll {
     id: number;
     label: string;
@@ -13,11 +14,20 @@ interface Poll {
         question: string;
         simplified_title?: string;
         explanation?: string;
+    } | {
+        question: string;
+        simplified_title?: string;
+        explanation?: string;
     }[] | null;
 }
 
 export function PollListItem({ poll }: { poll: Poll }) {
     const router = useRouter();
+
+    // Helper to extract question data regardless of structure (Array vs Object)
+    const questionData = Array.isArray(poll.poll_questions)
+        ? poll.poll_questions[0]
+        : poll.poll_questions;
 
     // Handler for saving vote (locally/temporarily) and redirecting
     const handleVote = async (vote: 'yes' | 'no') => {
@@ -41,10 +51,10 @@ export function PollListItem({ poll }: { poll: Poll }) {
 
     return (
         <PollCard
-            question={poll.poll_questions?.[0]?.question || poll.label}
+            question={questionData?.question || poll.label}
             label={poll.label}
-            simplifiedTitle={poll.poll_questions?.[0]?.simplified_title || poll.label} // Fallback to label if simplified title is missing
-            explanation={poll.poll_questions?.[0]?.explanation}
+            simplifiedTitle={questionData?.simplified_title || poll.label} // Fallback to label if simplified title is missing
+            explanation={questionData?.explanation}
             date={poll.poll_date}
             accepted={poll.accepted}
             onVote={handleVote}

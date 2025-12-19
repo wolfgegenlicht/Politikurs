@@ -25,7 +25,8 @@ export default async function PollDetailPage({
       poll_questions (
         question,
         simplified_title,
-        explanation
+        explanation,
+        vote_flip
       ),
       vote_results (
         fraction_id,
@@ -64,7 +65,10 @@ export default async function PollDetailPage({
         .single();
 
     // Frage und Details extrahieren
-    const questionData = poll.poll_questions?.[0]; // Ist jetzt Array oder null
+    const rawQuestions = poll.poll_questions;
+    // Handle both single object (1:1) and array (1:N) returns from Supabase
+    const questionData = Array.isArray(rawQuestions) ? rawQuestions[0] : rawQuestions;
+
     // Fallback falls Array leer oder null
     const question = questionData?.question || poll.label;
     const simplifiedTitle = questionData?.simplified_title;
@@ -99,11 +103,21 @@ export default async function PollDetailPage({
                         </h1>
 
                         {/* Question Badge */}
-                        <div className="mb-10 inline-block">
+                        <div className="mb-6 inline-block">
                             <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 flex items-center gap-3">
                                 {question}
                             </h2>
                         </div>
+
+                        {/* Original Title (Moved Up) */}
+                        {simplifiedTitle && (
+                            <div className="mb-10 pt-6 border-t border-slate-100">
+                                <p className="text-[10px] uppercase text-slate-400 font-bold mb-2 tracking-wider">Offizieller Titel</p>
+                                <p className="text-sm text-slate-500 font-medium leading-relaxed italic">
+                                    "{poll.label}"
+                                </p>
+                            </div>
+                        )}
 
                         {/* Voting Interface */}
                         <div className="mb-16">
@@ -112,16 +126,6 @@ export default async function PollDetailPage({
                                 initialVote={userVote?.user_vote || null}
                             />
                         </div>
-
-                        {/* Original Title (Small) */}
-                        {simplifiedTitle && (
-                            <div className="mb-10 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p className="text-[10px] uppercase text-slate-400 font-bold mb-2 tracking-wider">Offizieller Titel</p>
-                                <p className="text-sm text-slate-600 font-medium leading-relaxed italic">
-                                    "{poll.label}"
-                                </p>
-                            </div>
-                        )}
 
                         {/* AI Explanation "Was bedeutet das?" */}
                         {explanation && (
@@ -137,31 +141,36 @@ export default async function PollDetailPage({
 
                         {/* Results */}
                         <div className="pt-10 border-t border-slate-100">
-                            <ResultsChart results={poll.vote_results || []} />
+                            <ResultsChart
+                                results={poll.vote_results || []}
+                                voteFlip={questionData?.vote_flip || false}
+                            />
                         </div>
                     </div>
                 </div>
 
                 {/* Background Info (Refined) */}
-                {cleanDescription && (
-                    <div className="bg-white shadow-sm rounded-3xl p-8 sm:p-12 border border-slate-100">
-                        <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
-                        <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
-                            {cleanDescription.split('. ').map((sentence: string, i: number) => (
-                                <p key={i} className="mb-4">{sentence}.</p>
-                            ))}
+                {
+                    cleanDescription && (
+                        <div className="bg-white shadow-sm rounded-3xl p-8 sm:p-12 border border-slate-100">
+                            <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
+                            <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
+                                {cleanDescription.split('. ').map((sentence: string, i: number) => (
+                                    <p key={i} className="mb-4">{sentence}.</p>
+                                ))}
+                            </div>
+                            <a
+                                href={poll.abgeordnetenwatch_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center mt-8 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-wider"
+                            >
+                                Details auf Abgeordnetenwatch.de →
+                            </a>
                         </div>
-                        <a
-                            href={poll.abgeordnetenwatch_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center mt-8 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-wider"
-                        >
-                            Details auf Abgeordnetenwatch.de →
-                        </a>
-                    </div>
-                )}
-            </div>
-        </div>
+                    )
+                }
+            </div >
+        </div >
     );
 }

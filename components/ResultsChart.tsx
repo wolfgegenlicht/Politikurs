@@ -17,9 +17,10 @@ interface UserStats {
 interface ResultsChartProps {
     results: VoteResult[];
     userStats?: UserStats;
+    voteFlip?: boolean;
 }
 
-export function ResultsChart({ results, userStats }: ResultsChartProps) {
+export function ResultsChart({ results, userStats, voteFlip = false }: ResultsChartProps) {
     const sortedResults = [...results].sort((a, b) =>
         a.fraction_label.localeCompare(b.fraction_label)
     );
@@ -74,8 +75,17 @@ export function ResultsChart({ results, userStats }: ResultsChartProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {sortedResults.map((result) => {
                         const total = result.votes_yes + result.votes_no + result.votes_abstain;
-                        const yesPercent = total > 0 ? (result.votes_yes / total) * 100 : 0;
-                        const noPercent = total > 0 ? (result.votes_no / total) * 100 : 0;
+
+                        // FLIP LOGIC:
+                        // If voteFlip is true:
+                        // - Original "Yes" (Parliament) -> displayed as "Dagegen" (Red)
+                        // - Original "No" (Parliament) -> displayed as "Dafür" (Green)
+
+                        const displayYes = voteFlip ? result.votes_no : result.votes_yes;
+                        const displayNo = voteFlip ? result.votes_yes : result.votes_no;
+
+                        const yesPercent = total > 0 ? (displayYes / total) * 100 : 0;
+                        const noPercent = total > 0 ? (displayNo / total) * 100 : 0;
                         // Enthaltung als Rest
                         const abstainPercent = total > 0 ? (result.votes_abstain / total) * 100 : 0;
 
@@ -99,8 +109,8 @@ export function ResultsChart({ results, userStats }: ResultsChartProps) {
                                 </div>
 
                                 <div className="flex justify-between text-xs font-semibold text-slate-400">
-                                    <span className="text-green-600">{Math.round(yesPercent)}% Ja</span>
-                                    <span className="text-red-500">{Math.round(noPercent)}% Nein</span>
+                                    <span className="text-green-600">{Math.round(yesPercent)}% Dafür</span>
+                                    <span className="text-red-500">{Math.round(noPercent)}% Dagegen</span>
                                 </div>
                             </div>
                         );

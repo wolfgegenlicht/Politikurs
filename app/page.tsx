@@ -22,6 +22,10 @@ interface Poll {
     question: string;
     simplified_title?: string;
     explanation?: string;
+  } | {
+    question: string;
+    simplified_title?: string;
+    explanation?: string;
   }[] | null;
 }
 
@@ -66,6 +70,8 @@ export default async function HomePage() {
     `)
     .order('poll_date', { ascending: false })
     .limit(20);
+
+
 
   if (error) {
     console.error('Error fetching polls:', error);

@@ -225,11 +225,18 @@ WICHTIG: Befolge strikt diese 10 Regeln für "Klare Sprache":
 9. Nutze eindeutige Modalverben (Muss = Pflicht, Soll = Empfehlung).
 10. Mach es so einfach wie möglich (Tinder-Style, sofort verständlich).
 
+SPECIAL LOGIC - VOTE FLIP DETECTION:
+Manche Anträge sind negativ formuliert (z.B. "Keine Waffen liefern"). Ein "Ja" zu diesem Antrag bedeutet "Nein" zu Waffen.
+Wenn du die Frage positiv umformulierst (z.B. "Soll Deutschland Waffen liefern?"), dreht sich die Bedeutung von "Ja" um.
+Originales "Ja" (Keine Waffen) != Frage "Ja" (Waffen).
+In diesem Fall setze "vote_flip": true.
+
 FORMAT: Antworte NUR als valides JSON Objekt:
 {
   "simplified_title": "Kurzer, knackiger Titel (max 10 Wörter)",
   "question": "Neutrale Ja/Nein Frage (max 15 Wörter)",
-  "explanation": "Einfache Erklärung, was das Gesetz macht. Maximal 280 Zeichen (Tweet-Länge). Absolut idiotensicher."
+  "explanation": "Einfache Erklärung, worum es in dem Gesetz/Antrag geht. Maximal 280 Zeichen. WICHTIG: Erwähne NICHT das Ergebnis (abgelehnt/angenommen), sondern nur den Inhalt!",
+  "vote_flip": boolean (true wenn die vereinfachte Frage die Logik umdreht, sonst false)
 }
 `;
 
@@ -286,6 +293,7 @@ FORMAT: Antworte NUR als valides JSON Objekt:
             question: result.question,
             simplified_title: result.simplified_title,
             explanation: result.explanation,
+            vote_flip: result.vote_flip || false,
             model_used: 'mistralai/devstral-2512:free'
         });
     }
