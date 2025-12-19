@@ -21,4 +21,4 @@ async function checkPoll(pollId: number) {
     }
 }
 
-checkPoll(6361);
+checkPoll(6371);

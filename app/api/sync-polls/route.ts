@@ -216,8 +216,6 @@ async function generateQuestionForPoll(pollId: number, poll: any) {
     const systemPrompt = `
 Du bist ein politischer Redakteur für eine App, die komplexe Gesetze für normale Bürger verständlich macht.
 Deine Aufgabe: Analysiere den Gesetzesentwurf und erstelle 3 Dinge:
-1. Einen vereinfachten Titel (H2).
-2. Eine einfache Frage ("Bist du dafür...?").
 3. Eine ultra-kurze Erklärung ("Was bedeutet das?").
 
 PRIORITÄT: Die "question" muss logisch exakt zum Originaltitel ("label") passen.
@@ -254,6 +252,12 @@ WICHTIG: Befolge strikt diese 10 Regeln für "Klare Sprache":
 8. Nutze klare Zeitangaben.
 9. Nutze eindeutige Modalverben (Muss = Pflicht, Soll = Empfehlung).
 10. Mach es so einfach wie möglich (Tinder-Style, sofort verständlich).
+
+ERKLÄRUNG (explanation):
+- Erkläre, was der Antragsteller WOLLTE.
+- Wenn es eine "Ablehnung" ist: Erkläre NICHT, dass es abgelehnt wurde, sondern WAS abgelehnt wurde (Das Ziel des ursprünglichen Antrags).
+- Beispiel Falsch: "Der Ausschuss empfiehlt, den Antrag abzulehnen, da er unbegründet ist."
+- Beispiel Richtig: "Die Fraktion wollte erreichen, dass die Stimmen neu ausgezählt werden, da sie Fehler vermutete."
 
 SPECIAL LOGIC - VOTE FLIP DETECTION:
 Manche Anträge sind negativ formuliert.

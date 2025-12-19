@@ -117,7 +117,7 @@ export default async function HomePage() {
             <span className="text-3xl">🗳️</span>
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
-            CheckVotes
+            BundesCheck
           </h1>
           <p className="text-slate-500 font-medium text-lg">
             Deine Meinung vs. Bundestag
