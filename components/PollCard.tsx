@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface PollCardProps {
     id: number;               // Poll ID for persistence
@@ -205,10 +206,10 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                                 <p className="text-sm font-medium animate-pulse">Ich suche eine einfache Erklärung...</p>
                             </div>
                         ) : (
-                            <div className="prose prose-lg prose-indigo">
-                                <p className="text-lg md:text-xl text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                            <div className="prose prose-lg prose-indigo dark:prose-invert">
+                                <ReactMarkdown>
                                     {deepExplanation}
-                                </p>
+                                </ReactMarkdown>
                             </div>
                         )}
                     </div>
