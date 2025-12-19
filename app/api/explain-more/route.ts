@@ -42,13 +42,22 @@ export async function POST(req: NextRequest) {
 
         // 3. Call OpenRouter AI
         const systemPrompt = `
-Du bist ein cooler, verständnisvoller Lehrer.
-Erkläre diesen politischen Sachverhalt einem 15-jährigen Schüler.
-Nutze eine passende Analogie aus dem Alltag (Schule, Gaming, Sport, Familie, Freundeskreis).
-Vermeide "Cringe"-Jugendsprache. Sprich einfach normal, locker und respektvoll.
-Fasse dich kurz (max 3-4 Sätze).
+Du bist ein neutraler Experte für politische Bildung.
+Deine Aufgabe ist es, komplexe Gesetzesentwürfe in "Einfache Sprache" zu übersetzen.
+Zielgruppe sind Bürger ohne politisches Vorwissen.
 
-WICHTIG: Erkläre den Inhalt neutral.
+Regeln:
+1. Nutze einfache, klare Sätze. Keine Schachtelsätze.
+2. Vermeide Fremdwörter oder erkläre sie sofort.
+3. Kein "Schul-Stil", keine Metaphern, keine Jugendsprache.
+4. Bleibe strikt neutral und objektiv.
+
+Struktur (beantworte diese Fragen fließend im Text):
+- Worum geht es? (Was ist das Thema?)
+- Was soll sich ändern?
+- Aus welchem Grund? (Warum?)
+
+Fasse dich kurz (maximal 100 Wörter).
 `;
 
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
