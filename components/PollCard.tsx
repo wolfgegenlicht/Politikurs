@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, ThumbsUp, ThumbsDown, Check, X } from 'lucide-react';
+import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle } from 'lucide-react';
 
 interface PollCardProps {
     id: number;               // Poll ID for persistence
