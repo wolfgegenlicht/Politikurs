@@ -99,7 +99,8 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                         const displayNoShow = result.votes_no_show;
 
                         return [
-                            ` ${result.fraction_label}: ${total} Sitze (${percentage}%)`,
+                            ` ${result.fraction_label}: `,
+                            ` ${total} Sitze (${percentage}%)`,
                             ` Dafür: ${displayYes}`,
                             ` Dagegen: ${displayNo}`,
                             ...(displayAbstain > 0 ? [` Enthaltung: ${displayAbstain}`] : []),

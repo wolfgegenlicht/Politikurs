@@ -87,7 +87,7 @@ export default async function PollDetailPage({
                 </Link>
 
                 <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden mb-8 border border-slate-100">
-                    <div className="p-8 sm:p-12">
+                    <div className="p-4 sm:p-12">
                         <div className="flex items-center justify-between mb-8">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full">
                                 Bundestag Abstimmung

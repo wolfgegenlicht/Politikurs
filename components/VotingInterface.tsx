@@ -67,32 +67,6 @@ export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
 
             <div className="grid grid-cols-2 gap-6 sm:gap-8">
                 <button
-                    onClick={() => handleVote('yes')}
-                    disabled={voting}
-                    className={`
-                        group relative flex flex-col items-center justify-center p-8 rounded-[2rem] transition-all duration-300
-                        border-2 shadow-sm hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
-                        ${currentVote === 'yes'
-                            ? 'bg-green-50 border-green-500 ring-4 ring-green-100'
-                            : 'bg-white border-slate-100 hover:border-green-200 hover:bg-green-50/50'}
-                    `}
-                >
-                    <div className={`
-                        p-4 rounded-full mb-4 transition-colors duration-300
-                        ${currentVote === 'yes' ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-green-500 group-hover:text-white'}
-                    `}>
-                        <ThumbsUp size={32} strokeWidth={2.5} />
-                    </div>
-                    <span className={`
-                        text-lg font-bold uppercase tracking-widest
-                        ${currentVote === 'yes' ? 'text-green-700' : 'text-slate-400 group-hover:text-green-700'}
-                    `}>
-                        Dafür
-                    </span>
-                    {currentVote === 'yes' && <div className="absolute top-4 right-4 text-green-500"><Check size={20} /></div>}
-                </button>
-
-                <button
                     onClick={() => handleVote('no')}
                     disabled={voting}
                     className={`
@@ -107,7 +81,7 @@ export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
                         p-4 rounded-full mb-4 transition-colors duration-300
                         ${currentVote === 'no' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-red-500 group-hover:text-white'}
                     `}>
-                        <ThumbsDown size={32} strokeWidth={2.5} />
+                        <ThumbsDown size={24} strokeWidth={2.5} />
                     </div>
                     <span className={`
                         text-lg font-bold uppercase tracking-widest
@@ -117,6 +91,33 @@ export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
                     </span>
                     {currentVote === 'no' && <div className="absolute top-4 right-4 text-red-500"><Check size={20} /></div>}
                 </button>
+
+                <button
+                    onClick={() => handleVote('yes')}
+                    disabled={voting}
+                    className={`
+                        group relative flex flex-col items-center justify-center p-8 rounded-[2rem] transition-all duration-300
+                        border-2 shadow-sm hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                        ${currentVote === 'yes'
+                            ? 'bg-green-50 border-green-500 ring-4 ring-green-100'
+                            : 'bg-white border-slate-100 hover:border-green-200 hover:bg-green-50/50'}
+                    `}
+                >
+                    <div className={`
+                        p-4 rounded-full mb-4 transition-colors duration-300
+                        ${currentVote === 'yes' ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-green-500 group-hover:text-white'}
+                    `}>
+                        <ThumbsUp size={24} strokeWidth={2.5} />
+                    </div>
+                    <span className={`
+                        text-lg font-bold uppercase tracking-widest
+                        ${currentVote === 'yes' ? 'text-green-700' : 'text-slate-400 group-hover:text-green-700'}
+                    `}>
+                        Dafür
+                    </span>
+                    {currentVote === 'yes' && <div className="absolute top-4 right-4 text-green-500"><Check size={20} /></div>}
+                </button>
+
             </div>
 
             {voting && (
