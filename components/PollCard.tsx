@@ -129,11 +129,11 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                     <div className="flex items-center gap-1.5 mb-2">
                         <p className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Originaltitel</p>
 
-                        <div className="group relative flex items-center">
+                        <div className="group/tooltip relative flex items-center">
                             <HelpCircle size={10} className="text-slate-400 cursor-help" />
 
                             {/* Tooltip */}
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover:translate-y-0">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover/tooltip:translate-y-0">
                                 <p className="font-medium leading-relaxed text-center">
                                     Der offizielle Titel im Bundestag ist oft lang oder kompliziert formuliert. Ich zeige dir hier zur Transparenz den offiziellen Titel, aber habe ihn für die Übersicht vereinfacht.
                                 </p>
