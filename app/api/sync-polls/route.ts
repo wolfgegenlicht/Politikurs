@@ -11,9 +11,9 @@ const CURRENT_LEGISLATURE_ID = 161;
 
 export async function GET() {
     try {
-        // 1. Hole die neuesten 10 Polls aus aktueller Legislaturperiode
+        // 1. Hole die neuesten 20 Polls (User request: "next 10", existing 10 + 10 new)
         const response = await fetch(
-            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=10&sort_by=field_poll_date&sort_direction=desc`,
+            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=20&sort_by=field_poll_date&sort_direction=desc`,
             {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (compatible; BundestagVotesApp/1.0; +https://github.com/wolfgangstefani/checkvotes)',
@@ -63,15 +63,28 @@ export async function GET() {
                 // 4. Votes für diesen Poll laden und aggregieren
                 await syncVotesForPoll(poll.id);
 
-                // 5. Frage generieren
+                // 5. Frage generieren (IMMER für neue Polls)
                 await generateQuestionForPoll(poll.id, poll);
 
                 newPolls++;
             } else {
-                // Auch für existierende Polls prüfen ob Frage existiert (Retry Logic)
-                await generateQuestionForPoll(poll.id, poll);
-                // Auch Votes aktualisieren (falls vorher fehlgeschlagen)
+                // Bei existierenden Polls: Votes updaten
                 await syncVotesForPoll(poll.id);
+
+                // CHECK: Existiert bereits eine Frage? Wenn ja, NICHT neu generieren!
+                const { data: existingQuestion } = await supabase
+                    .from('poll_questions')
+                    .select('id')
+                    .eq('poll_id', poll.id)
+                    .single();
+
+                if (!existingQuestion) {
+                    console.log(`Generating missing question for existing poll ${poll.id}...`);
+                    await generateQuestionForPoll(poll.id, poll);
+                } else {
+                    console.log(`Skipping AI generation for poll ${poll.id} (already exists).`);
+                }
+
                 updatedPolls++;
             }
         }
@@ -95,13 +108,13 @@ export async function GET() {
 // ============================================
 async function syncVotesForPoll(pollId: number) {
     const allVotes: any[] = [];
-    let page = 0;
-    let hasMore = true;
 
-    // Alle Votes paginiert laden
-    while (hasMore) {
+    // Fetch all votes in one go (limit 1000 is safe for Bundestag size ~736)
+    // Abgeordnetenwatch seems to ignore range_start for pagination or behaves unexpectedly,
+    // so we just fetch everything at once.
+    try {
         const response = await fetch(
-            `https://www.abgeordnetenwatch.de/api/v2/votes?poll=${pollId}&range_start=${page * 100}&range_end=${(page + 1) * 100}`,
+            `https://www.abgeordnetenwatch.de/api/v2/votes?poll=${pollId}&range_end=1000`,
             {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (compatible; BundestagVotesApp/1.0; +https://github.com/wolfgangstefani/checkvotes)',
@@ -117,19 +130,13 @@ async function syncVotesForPoll(pollId: number) {
 
         const data = await response.json();
 
-        if (!data.data || !Array.isArray(data.data)) {
-            console.warn(`No data found for poll ${pollId}, page ${page}`);
-            hasMore = false;
-            continue;
+        if (data.data && Array.isArray(data.data)) {
+            console.log(`Synced ${data.data.length} votes for poll ${pollId}`);
+            allVotes.push(...data.data);
         }
 
-        allVotes.push(...data.data);
-
-        hasMore = data.data.length === 100; // Wenn 100 Ergebnisse, gibt's mehr
-        page++;
-
-        // Sicherheits-Break nach 20 Seiten
-        if (page > 20) break;
+    } catch (e) {
+        console.error(`Error syncing votes for poll ${pollId}:`, e);
     }
 
     // Nach Fraktion aggregieren

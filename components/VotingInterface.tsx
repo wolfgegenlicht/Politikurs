@@ -14,10 +14,27 @@ export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
     const [voting, setVoting] = useState(false);
     const router = useRouter();
 
+    // Check localStorage on mount if no initialVote provided
+    useState(() => {
+        if (typeof window !== 'undefined' && !initialVote) {
+            const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
+            if (votes[pollId]) {
+                setCurrentVote(votes[pollId]);
+            }
+        }
+    });
+
     async function handleVote(vote: 'yes' | 'no') {
         setVoting(true);
         // Optimistic UI update
         setCurrentVote(vote);
+
+        // Save to LocalStorage (so Overview knows about it)
+        if (typeof window !== 'undefined') {
+            const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
+            votes[pollId] = vote;
+            localStorage.setItem('user_votes', JSON.stringify(votes));
+        }
 
         try {
             const response = await fetch('/api/vote', {

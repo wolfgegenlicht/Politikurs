@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Info, ThumbsUp, ThumbsDown, Check, X } from 'lucide-react';
 
 interface PollCardProps {
+    id: number;               // Poll ID for persistence
     question: string;         // "Bist du dafür...?"
     label: string;            // Original Titel
     simplifiedTitle?: string; // AI Titel
@@ -13,8 +14,22 @@ interface PollCardProps {
     onVote?: (vote: 'yes' | 'no') => void; // Optional für Homepage Voting
 }
 
-export function PollCard({ question, label, simplifiedTitle, explanation, date, accepted, onVote }: PollCardProps) {
+export function PollCard({ id, question, label, simplifiedTitle, explanation, date, accepted, onVote }: PollCardProps) {
     const [showExplanation, setShowExplanation] = useState(false);
+    const [userVote, setUserVote] = useState<'yes' | 'no' | null>(null);
+    const [isDetailsMode, setIsDetailsMode] = useState(false);
+
+    // Load vote from localStorage on mount
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
+            if (votes[id]) {
+                setUserVote(votes[id]);
+                setIsDetailsMode(true);
+            }
+        }
+    });
+
     const formattedDate = new Date(date).toLocaleDateString('de-DE', {
         day: '2-digit',
         month: '2-digit',
@@ -22,6 +37,21 @@ export function PollCard({ question, label, simplifiedTitle, explanation, date, 
     });
 
     const displayTitle = simplifiedTitle || label;
+
+    const handleVote = (vote: 'yes' | 'no') => {
+        // Save to LocalStorage
+        const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
+        votes[id] = vote;
+        localStorage.setItem('user_votes', JSON.stringify(votes));
+
+        setUserVote(vote);
+        setIsDetailsMode(true);
+
+        // Propagate event (likely redirect)
+        if (onVote) {
+            onVote(vote);
+        }
+    };
 
     return (
         <div className="group relative w-full h-full bg-white dark:bg-slate-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)]">
@@ -96,21 +126,46 @@ export function PollCard({ question, label, simplifiedTitle, explanation, date, 
 
             {/* Action Buttons (Homepage only) */}
             {onVote && (
-                <div className="p-4 grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700">
-                    <button
-                        onClick={(e) => { e.preventDefault(); onVote('no'); }}
-                        className="group flex flex-col items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500 rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md"
-                    >
-                        <X size={28} className="mb-1 group-hover:scale-110 transition-transform" strokeWidth={3} />
-                        <span className="font-bold uppercase tracking-wider text-[10px]">Dagegen</span>
-                    </button>
-                    <button
-                        onClick={(e) => { e.preventDefault(); onVote('yes'); }}
-                        className="group flex flex-col items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500 rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md"
-                    >
-                        <Check size={28} className="mb-1 group-hover:scale-110 transition-transform" strokeWidth={3} />
-                        <span className="font-bold uppercase tracking-wider text-[10px]">Dafür</span>
-                    </button>
+                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                        <button
+                            onClick={(e) => { e.preventDefault(); handleVote('no'); }}
+                            className={`
+                                group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md
+                                ${userVote === 'no'
+                                    ? 'bg-red-500 text-white border-red-600 ring-2 ring-red-200'
+                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500'}
+                            `}
+                        >
+                            <X size={28} className={`mb-1 transition-transform ${userVote === 'no' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
+                            <span className="font-bold uppercase tracking-wider text-[10px]">Dagegen</span>
+                        </button>
+                        <button
+                            onClick={(e) => { e.preventDefault(); handleVote('yes'); }}
+                            className={`
+                                group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md
+                                ${userVote === 'yes'
+                                    ? 'bg-green-500 text-white border-green-600 ring-2 ring-green-200'
+                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500'}
+                            `}
+                        >
+                            <Check size={28} className={`mb-1 transition-transform ${userVote === 'yes' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
+                            <span className="font-bold uppercase tracking-wider text-[10px]">Dafür</span>
+                        </button>
+                    </div>
+
+                    {/* Details Link if voted */}
+                    {isDetailsMode && (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (onVote) onVote(userVote!); // Re-trigger navigation
+                            }}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
+                        >
+                            Details anzeigen
+                        </button>
+                    )}
                 </div>
             )}
 

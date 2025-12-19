@@ -51,6 +51,7 @@ export function PollListItem({ poll }: { poll: Poll }) {
 
     return (
         <PollCard
+            id={poll.id}
             question={questionData?.question || poll.label}
             label={poll.label}
             simplifiedTitle={questionData?.simplified_title || poll.label} // Fallback to label if simplified title is missing
