@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { PollCard } from '@/components/PollCard';
 import { PollListItem } from '../components/PollListItem';
 import { PollList } from '@/components/PollList';
+import { ResetDataButton } from '@/components/ResetDataButton';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -114,6 +115,7 @@ export default async function HomePage() {
           <a href="https://www.abgeordnetenwatch.de" target="_blank" className="text-indigo-600 font-bold hover:underline">
             Abgeordnetenwatch.de
           </a>
+          <ResetDataButton />
         </div>
       </div>
     </div>

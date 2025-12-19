@@ -9,11 +9,14 @@ const supabase = createClient(
 // Aktuelle Legislaturperiode (Bundestag 2025-2029) - using 161 as per user request (it might be 2021-2025 in reality, but following request)
 const CURRENT_LEGISLATURE_ID = 161;
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        // 1. Hole die neuesten 20 Polls (User request: "next 10", existing 10 + 10 new)
+        const { searchParams } = new URL(request.url);
+        const limit = parseInt(searchParams.get('limit') || '50');
+
+        // 1. Hole die neuesten Polls (User request: "next 10", etc.)
         const response = await fetch(
-            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=50&sort_by=field_poll_date&sort_direction=desc`,
+            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=${limit}&sort_by=field_poll_date&sort_direction=desc`,
             {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (compatible; BundestagVotesApp/1.0; +https://github.com/wolfgangstefani/checkvotes)',
