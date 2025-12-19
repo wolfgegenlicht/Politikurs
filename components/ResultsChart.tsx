@@ -219,7 +219,7 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                                 <div className="flex items-start justify-between mb-6">
                                     <div className="flex items-center gap-3">
                                         <div
-                                            className="w-4 h-4 rounded-full shadow-sm"
+                                            className="w-[16px] h-[16px] rounded-full shadow-sm"
                                             style={{ backgroundColor: getPartyColor(result.fraction_label) }}
                                         />
                                         <div>
