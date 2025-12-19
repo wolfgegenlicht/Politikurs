@@ -61,6 +61,23 @@ export default function DatenschutzPage() {
                         </section>
 
                         <section className="mb-8">
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">Hosting</h3>
+                            <p className="mb-4">
+                                Wir hosten unsere Website bei <strong>Vercel Inc.</strong>, 340 S Lemon Ave #4133 Walnut, CA 91789, USA („Vercel“).
+                            </p>
+                            <p className="mb-4">
+                                Wenn Sie unsere Website besuchen, erfasst Vercel verschiedene Logfiles inklusive Ihrer IP-Adressen.
+                                Dies ist technisch erforderlich, um Ihnen unsere Website anzuzeigen und deren Stabilität und Sicherheit zu gewährleisten.
+                                Vercel verarbeitet Ihre Daten unter anderem auch in den USA.
+                            </p>
+                            <p className="mb-4">
+                                Wir haben mit Vercel einen Vertrag über die Auftragsverarbeitung (Data Processing Addendum) geschlossen.
+                                Dieser garantiert, dass Vercel die personenbezogenen Daten unserer Websitebesucher nur nach unseren Weisungen und unter Einhaltung der DSGVO verarbeitet.
+                                Weitere Informationen zum Datenschutz bei Vercel finden Sie unter: <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">https://vercel.com/legal/privacy-policy</a>.
+                            </p>
+                        </section>
+
+                        <section className="mb-8">
                             <h3 className="text-xl font-bold text-slate-900 mb-4">Information über die Erhebung personenbezogener Daten</h3>
                             <p className="mb-4">(1) Im Folgenden informieren wir über die Erhebung personenbezogener Daten bei Nutzung unserer Website. Personenbezogene Daten sind z. B. Name, Adresse, E-Mail-Adressen, Nutzerverhalten.</p>
                             <p className="mb-4">(2) Bei einer Kontaktaufnahme mit uns per E-Mail oder über ein Kontaktformular werden die von Ihnen mitgeteilten Daten (Ihre E-Mail-Adresse, ggf. Ihr Name und Ihre Telefonnummer) von uns gespeichert, um Ihre Fragen zu beantworten. Die in diesem Zusammenhang anfallenden Daten löschen wir, nachdem die Speicherung nicht mehr erforderlich ist, oder die Verarbeitung wird eingeschränkt, falls gesetzliche Aufbewahrungspflichten bestehen.</p>
