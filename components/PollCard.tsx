@@ -126,16 +126,19 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
 
                 {/* Original Title (Collapsed/Subtle) */}
                 <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-700">
-                    <div className="flex items-center gap-1.5 mb-2 group relative">
+                    <div className="flex items-center gap-1.5 mb-2">
                         <p className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Originaltitel</p>
-                        <HelpCircle size={10} className="text-slate-400 cursor-help" />
 
-                        {/* Tooltip */}
-                        <div className="absolute bottom-full left-0 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover:translate-y-0">
-                            <p className="font-medium leading-relaxed">
-                                Der offizielle Titel im Bundestag ist oft lang oder kompliziert formuliert. Ich zeige dir hier zur Transparenz den offiziellen Titel, aber habe ihn für die Übersicht vereinfacht.
-                            </p>
-                            <div className="absolute bottom-0 left-4 w-2 h-2 bg-slate-900 transform translate-y-1/2 rotate-45"></div>
+                        <div className="group relative flex items-center">
+                            <HelpCircle size={10} className="text-slate-400 cursor-help" />
+
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover:translate-y-0">
+                                <p className="font-medium leading-relaxed text-center">
+                                    Der offizielle Titel im Bundestag ist oft lang oder kompliziert formuliert. Ich zeige dir hier zur Transparenz den offiziellen Titel, aber habe ihn für die Übersicht vereinfacht.
+                                </p>
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 transform translate-y-1/2 rotate-45"></div>
+                            </div>
                         </div>
                     </div>
                     <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
