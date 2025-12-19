@@ -106,7 +106,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                                 e.preventDefault();
                                 setExplanationMode(1);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-colors uppercase tracking-wider"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-full transition-colors uppercase tracking-wider"
                         >
                             <Info size={14} strokeWidth={3} />
                             Was bedeutet das?
