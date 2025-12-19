@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'checkvotes - Deine Meinung vs. Bundestag',
-        short_name: 'checkvotes',
+        name: 'PolitiKurs - Wie hättest du im Bundestag entschieden?',
+        short_name: 'PolitiKurs',
         description: 'Vergleiche deine Meinung mit den Abstimmungen im Bundestag.',
         start_url: '/',
         display: 'standalone',

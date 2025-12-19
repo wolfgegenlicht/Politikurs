@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BundesCheck",
-  description: "Deine Meinung vs. Bundestag",
+  title: "PolitiKurs",
+  description: "Wie hättest du im Bundestag entschieden?",
 };
 
 export default function RootLayout({
