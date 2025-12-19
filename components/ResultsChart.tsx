@@ -1,5 +1,10 @@
 'use client';
 
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 interface VoteResult {
     fraction_id: number;
     fraction_label: string;
@@ -30,10 +35,11 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
         'SPD': '#e11d48',     // Rose-600
         'AfD': '#0ea5e9',     // Sky-500
         'FDP': '#fbbf24',     // Amber-400
-        'GRÜNEN': '#22c55e',  // Green-500
-        'BÜNDNIS 90/DIE GRÜNEN': '#22c55e',
+        'GRÜNEN': '#22c5e',  // Green-500
+        'BÜNDNIS 90/DIE GRÜNEN': '#22c5e',
         'DIE LINKE': '#db2777', // Pink-600
-        'BSW': '#be123c'      // Rose-700
+        'BSW': '#be123c',      // Rose-700
+        'fraktionslos': '#94a3b8' // Slate-400
     };
 
     function getPartyColor(label: string): string {
@@ -42,6 +48,53 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
         }
         return '#94a3b8'; // Slate-400
     }
+
+    // Chart.js Data Configuration
+    const totalVotes = results.reduce((acc, r) => acc + r.votes_yes + r.votes_no + r.votes_abstain, 0);
+
+    const chartData = {
+        labels: sortedResults.map(r => r.fraction_label),
+        datasets: [
+            {
+                data: sortedResults.map(r => r.votes_yes + r.votes_no + r.votes_abstain),
+                backgroundColor: sortedResults.map(r => getPartyColor(r.fraction_label)),
+                borderWidth: 0,
+                hoverOffset: 4,
+            },
+        ],
+    };
+
+    const chartOptions = {
+        cutout: '75%',
+        plugins: {
+            legend: {
+                display: false // We use our custom legend
+            },
+            tooltip: {
+                backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                padding: 12,
+                titleFont: {
+                    family: 'inherit',
+                    size: 14,
+                    weight: 'bold' as const
+                },
+                bodyFont: {
+                    family: 'inherit',
+                    size: 13
+                },
+                cornerRadius: 12,
+                displayColors: true,
+                callbacks: {
+                    label: function (context: any) {
+                        const value = context.raw || 0;
+                        const percentage = totalVotes > 0 ? Math.round((value / totalVotes) * 100) : 0;
+                        return `${value} Sitze (${percentage}%)`;
+                    }
+                }
+            }
+        },
+        maintainAspectRatio: false,
+    };
 
     return (
         <div className="space-y-12">
@@ -106,75 +159,6 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                                             </span>
                                         </div>
                                     </div>
-
-                                    {/* Donut Chart */}
-                                    <div className="relative w-16 h-16">
-                                        <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                                            {/* Background Circle */}
-                                            <path
-                                                className="text-slate-100"
-                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            />
-                                            {/* Segments - calculated based on circumferences */}
-                                            {(() => {
-                                                const r = 15.9155;
-                                                const c = 2 * Math.PI * r;
-
-                                                // Values
-                                                const GreenVal = yesPercent; // 0-100
-                                                const RedVal = noPercent;
-                                                const GreyVal = abstainPercent;
-
-                                                // Offsets
-                                                // Green starts at 0
-                                                // Red starts after Green
-                                                // Grey starts after Green + Red
-
-                                                return (
-                                                    <>
-                                                        {/* Green Segment (Dafür) */}
-                                                        {GreenVal > 0 && (
-                                                            <path
-                                                                className="text-green-500 transition-all duration-1000 ease-out"
-                                                                strokeDasharray={`${GreenVal}, 100`}
-                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="4"
-                                                            />
-                                                        )}
-                                                        {/* Red Segment (Dagegen) */}
-                                                        {RedVal > 0 && (
-                                                            <path
-                                                                className="text-red-500 transition-all duration-1000 ease-out"
-                                                                strokeDasharray={`${RedVal}, 100`}
-                                                                strokeDashoffset={`-${GreenVal}`}
-                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="4"
-                                                            />
-                                                        )}
-                                                        {/* Grey Segment (Enthaltung) */}
-                                                        {GreyVal > 0 && (
-                                                            <path
-                                                                className="text-slate-300 transition-all duration-1000 ease-out"
-                                                                strokeDasharray={`${GreyVal}, 100`}
-                                                                strokeDashoffset={`-${GreenVal + RedVal}`}
-                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="4"
-                                                            />
-                                                        )}
-                                                    </>
-                                                );
-                                            })()}
-                                        </svg>
-                                    </div>
                                 </div>
 
                                 {/* Detailed Stats Grid */}
@@ -220,6 +204,51 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                             </div>
                         );
                     })}
+                </div>
+            </div>
+
+            {/* Global Party Distribution Pie Chart */}
+            <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight text-center">
+                    Sitzverteilung der Abstimmung
+                </h3>
+                <div className="flex flex-col items-center justify-center gap-12">
+
+                    {/* Pie Chart */}
+                    <div className="relative w-72 h-72 flex-shrink-0">
+                        <Doughnut data={chartData} options={chartOptions} />
+
+                        {/* Center Text */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className="text-4xl font-black text-slate-900">
+                                {totalVotes}
+                            </span>
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Stimmen</span>
+                        </div>
+                    </div>
+
+                    {/* Legend (Below) */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full max-w-4xl">
+                        {sortedResults.map((result) => {
+                            const total = result.votes_yes + result.votes_no + result.votes_abstain;
+                            const percent = totalVotes > 0 ? (total / totalVotes) * 100 : 0;
+
+                            if (total === 0) return null;
+
+                            return (
+                                <div key={result.fraction_id} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100 transition-colors text-center">
+                                    <div
+                                        className="w-3 h-3 rounded-full shadow-sm mb-3"
+                                        style={{ backgroundColor: getPartyColor(result.fraction_label) }}
+                                    />
+                                    <span className="font-bold text-slate-700 text-sm mb-1 line-clamp-1">{result.fraction_label}</span>
+                                    <div className="text-xs text-slate-500 font-medium">
+                                        {total} Sitze <span className="text-slate-300">|</span> {Math.round(percent)}%
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
