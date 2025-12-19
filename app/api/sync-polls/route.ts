@@ -13,7 +13,7 @@ export async function GET() {
     try {
         // 1. Hole die neuesten 20 Polls (User request: "next 10", existing 10 + 10 new)
         const response = await fetch(
-            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=20&sort_by=field_poll_date&sort_direction=desc`,
+            `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=50&sort_by=field_poll_date&sort_direction=desc`,
             {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (compatible; BundestagVotesApp/1.0; +https://github.com/wolfgangstefani/checkvotes)',
@@ -36,6 +36,9 @@ export async function GET() {
         let updatedPolls = 0;
 
         for (const poll of polls) {
+            // Extract topics (labels only)
+            const topicLabels = poll.field_topics ? poll.field_topics.map((t: any) => t.label) : [];
+
             // 2. Check ob Poll bereits in DB existiert
             const { data: existing } = await supabase
                 .from('polls')
@@ -52,7 +55,8 @@ export async function GET() {
                     poll_date: poll.field_poll_date,
                     accepted: poll.field_accepted,
                     legislature_id: poll.field_legislature.id,
-                    abgeordnetenwatch_url: poll.abgeordnetenwatch_url
+                    abgeordnetenwatch_url: poll.abgeordnetenwatch_url,
+                    topics: topicLabels
                 });
 
                 if (insertError) {
@@ -68,7 +72,8 @@ export async function GET() {
 
                 newPolls++;
             } else {
-                // Bei existierenden Polls: Votes updaten
+                // Bei existierenden Polls: Votes updaten UND Topics syncen
+                await supabase.from('polls').update({ topics: topicLabels }).eq('id', poll.id);
                 await syncVotesForPoll(poll.id);
 
                 // CHECK: Existiert bereits eine Frage? Wenn ja, NICHT neu generieren!

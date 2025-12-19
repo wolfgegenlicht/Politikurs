@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { PollCard } from '@/components/PollCard';
-import { PollListItem } from '@/components/PollListItem';
+import { PollListItem } from '../components/PollListItem';
+import { PollList } from '@/components/PollList';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,22 +13,7 @@ const supabase = createClient(
 // Let's keep Page as Server Component but make a client wrapper for the list?
 // Or just iterate PollCards which are now Client Components.
 
-// Interface Update
-interface Poll {
-  id: number;
-  label: string;
-  poll_date: string;
-  accepted: boolean;
-  poll_questions: {
-    question: string;
-    simplified_title?: string;
-    explanation?: string;
-  } | {
-    question: string;
-    simplified_title?: string;
-    explanation?: string;
-  }[] | null;
-}
+
 
 export const revalidate = 3600; // ISR: Revalidate every hour
 
@@ -57,19 +43,9 @@ export default async function HomePage() {
   // Lade Polls mit generierten Fragen AND simplified titles
   const { data: polls, error } = await supabase
     .from('polls')
-    .select(`
-      id,
-      label,
-      poll_date,
-      accepted,
-      poll_questions (
-        question,
-        simplified_title,
-        explanation
-      )
-    `)
+    .select('id, label, description, poll_date, accepted, poll_questions!inner(*), vote_results(*), topics')
     .order('poll_date', { ascending: false })
-    .limit(20);
+    .limit(50);
 
 
 
@@ -125,13 +101,7 @@ export default async function HomePage() {
         </div>
 
         {/* Polls Stack */}
-        <div className="space-y-8">
-          {polls?.map((poll: Poll) => (
-            <div id={`poll-${poll.id}`} key={poll.id} className="transform transition-all duration-300 hover:-translate-y-1">
-              <PollListItem poll={poll} />
-            </div>
-          ))}
-        </div>
+        <PollList polls={polls || []} />
 
         {/* Footer Info */}
         <div className="mt-16 text-center">
