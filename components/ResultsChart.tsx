@@ -90,27 +90,132 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                         const abstainPercent = total > 0 ? (result.votes_abstain / total) * 100 : 0;
 
                         return (
-                            <div key={result.fraction_id} className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div
-                                        className="w-3 h-3 rounded-full"
-                                        style={{ backgroundColor: getPartyColor(result.fraction_label) }}
-                                    />
-                                    <span className="font-bold text-slate-700 text-sm truncate">
-                                        {result.fraction_label}
-                                    </span>
+                            <div key={result.fraction_id} className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300">
+                                <div className="flex items-start justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="w-4 h-4 rounded-full shadow-sm"
+                                            style={{ backgroundColor: getPartyColor(result.fraction_label) }}
+                                        />
+                                        <div>
+                                            <span className="font-bold text-slate-800 text-base block">
+                                                {result.fraction_label}
+                                            </span>
+                                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                                                {total} Sitze
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Donut Chart */}
+                                    <div className="relative w-16 h-16">
+                                        <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                                            {/* Background Circle */}
+                                            <path
+                                                className="text-slate-100"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            />
+                                            {/* Segments - calculated based on circumferences */}
+                                            {(() => {
+                                                const r = 15.9155;
+                                                const c = 2 * Math.PI * r;
+
+                                                // Values
+                                                const GreenVal = yesPercent; // 0-100
+                                                const RedVal = noPercent;
+                                                const GreyVal = abstainPercent;
+
+                                                // Offsets
+                                                // Green starts at 0
+                                                // Red starts after Green
+                                                // Grey starts after Green + Red
+
+                                                return (
+                                                    <>
+                                                        {/* Green Segment (Dafür) */}
+                                                        {GreenVal > 0 && (
+                                                            <path
+                                                                className="text-green-500 transition-all duration-1000 ease-out"
+                                                                strokeDasharray={`${GreenVal}, 100`}
+                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                            />
+                                                        )}
+                                                        {/* Red Segment (Dagegen) */}
+                                                        {RedVal > 0 && (
+                                                            <path
+                                                                className="text-red-500 transition-all duration-1000 ease-out"
+                                                                strokeDasharray={`${RedVal}, 100`}
+                                                                strokeDashoffset={`-${GreenVal}`}
+                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                            />
+                                                        )}
+                                                        {/* Grey Segment (Enthaltung) */}
+                                                        {GreyVal > 0 && (
+                                                            <path
+                                                                className="text-slate-300 transition-all duration-1000 ease-out"
+                                                                strokeDasharray={`${GreyVal}, 100`}
+                                                                strokeDashoffset={`-${GreenVal + RedVal}`}
+                                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                            />
+                                                        )}
+                                                    </>
+                                                );
+                                            })()}
+                                        </svg>
+                                    </div>
                                 </div>
 
-                                {/* Minimal Progress Bar */}
-                                <div className="h-2.5 w-full bg-slate-100 rounded-full flex overflow-hidden mb-3">
-                                    <div className="bg-green-500" style={{ width: `${yesPercent}%` }} />
-                                    <div className="bg-slate-300" style={{ width: `${abstainPercent}%` }} />
-                                    <div className="bg-red-500" style={{ width: `${noPercent}%` }} />
-                                </div>
+                                {/* Detailed Stats Grid */}
+                                <div className="space-y-3">
+                                    {/* Dafür */}
+                                    <div className="flex items-center justify-between group">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Dafür</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-sm font-black text-slate-800">{Math.round(yesPercent)}%</div>
+                                            <div className="text-xs text-slate-400 font-medium">{displayYes} Stimmen</div>
+                                        </div>
+                                    </div>
 
-                                <div className="flex justify-between text-xs font-semibold text-slate-400">
-                                    <span className="text-green-600">{Math.round(yesPercent)}% Dafür</span>
-                                    <span className="text-red-500">{Math.round(noPercent)}% Dagegen</span>
+                                    {/* Dagegen */}
+                                    <div className="flex items-center justify-between group">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Dagegen</span>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-sm font-black text-slate-800">{Math.round(noPercent)}%</div>
+                                            <div className="text-xs text-slate-400 font-medium">{displayNo} Stimmen</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Enthaltung (Nur anzeigen wenn > 0) */}
+                                    {result.votes_abstain > 0 && (
+                                        <div className="flex items-center justify-between group">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Enthaltung</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-black text-slate-400">{Math.round(abstainPercent)}%</div>
+                                                <div className="text-xs text-slate-300 font-medium">{result.votes_abstain} Stimmen</div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
