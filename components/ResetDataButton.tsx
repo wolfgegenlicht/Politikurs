@@ -29,7 +29,7 @@ export function ResetDataButton() {
     return (
         <button
             onClick={handleReset}
-            className="mt-8 text-xs font-bold text-red-400 hover:text-red-600 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors opacity-60 hover:opacity-100"
+            className="mt-8 mx-auto text-xs font-bold text-red-400 hover:text-red-600 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors opacity-60 hover:opacity-100"
         >
             <Trash2 size={12} strokeWidth={2.5} />
             Alle Abstimmungen zurücksetzen

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { PollInteraction } from '@/components/PollInteraction';
 import { BackButton } from '@/components/BackButton';
+import { Footer } from '@/components/Footer';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -146,7 +147,9 @@ export default async function PollDetailPage({
                         </div>
                     )
                 }
-            </div >
-        </div >
+
+                <Footer />
+            </div>
+        </div>
     );
 }
