@@ -31,20 +31,22 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
     );
 
     const partyColors: Record<string, string> = {
-        'CDU/CSU': '#1e293b', // Slate-800
-        'SPD': '#e11d48',     // Rose-600
-        'AfD': '#0ea5e9',     // Sky-500
-        'FDP': '#fbbf24',     // Amber-400
-        'GRÜNEN': '#22c5e',  // Green-500
-        'BÜNDNIS 90/DIE GRÜNEN': '#22c5e',
-        'DIE LINKE': '#db2777', // Pink-600
-        'BSW': '#be123c',      // Rose-700
+        'CDU/CSU': '#000000', // Black
+        'SPD': '#E3000F',     // SPD Red
+        'AfD': '#009EE0',     // AfD Blue
+        'FDP': '#FFED00',     // FDP Yellow
+        'GRÜNEN': '#46962b',  // Green
+        'BÜNDNIS 90/DIE GRÜNEN': '#46962b',
+        'DIE LINKE': '#BE3075', // Magenta
+        'BSW': '#771e3d',      // BSW Dark Red
+        'SSW': '#003C8F',      // SSW Blue
         'fraktionslos': '#94a3b8' // Slate-400
     };
 
     function getPartyColor(label: string): string {
+        const lowerLabel = label.toLowerCase();
         for (const [key, color] of Object.entries(partyColors)) {
-            if (label.includes(key)) return color;
+            if (lowerLabel.includes(key.toLowerCase())) return color;
         }
         return '#94a3b8'; // Slate-400
     }
