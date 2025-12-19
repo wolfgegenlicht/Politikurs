@@ -119,6 +119,7 @@ export default async function HomePage() {
           <div className="flex justify-center gap-6 text-xs font-bold text-slate-400 uppercase tracking-wider mb-8">
             <Link href="/impressum" className="hover:text-slate-600">Impressum</Link>
             <Link href="/datenschutz" className="hover:text-slate-600">Datenschutz</Link>
+            <Link href="https://www.wolfgegenlicht.de" className="hover:text-slate-600">Projekt von Wolfgang Stefani</Link>
           </div>
           <ResetDataButton />
         </div>
