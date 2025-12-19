@@ -17,7 +17,7 @@ const supabase = createClient(
 
 
 
-export const revalidate = 3600; // ISR: Revalidate every hour
+export const revalidate = 60; // ISR: Revalidate every minute
 
 export default async function HomePage() {
   // Check for placeholder credentials to avoid build errors
