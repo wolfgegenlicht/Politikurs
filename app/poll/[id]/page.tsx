@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { PollInteraction } from '@/components/PollInteraction';
+import { BackButton } from '@/components/BackButton';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -78,12 +79,7 @@ export default async function PollDetailPage({
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
-                <Link
-                    href={`/#poll-${pollId}`}
-                    className="inline-flex items-center text-slate-400 hover:text-slate-900 mb-8 transition-colors text-sm font-semibold tracking-wide uppercase"
-                >
-                    <span className="mr-2">←</span> Zurück
-                </Link>
+                <BackButton currentPollId={pollId} />
 
                 <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden mb-8 border border-slate-100">
                     <div className="p-4 sm:p-12">

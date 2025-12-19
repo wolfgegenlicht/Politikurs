@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PollListItem } from './PollListItem';
 import { mapTopicsToTheme, SimplifiedTheme, THEMES } from '@/lib/topicUtils';
 
@@ -9,7 +9,23 @@ interface PollListProps {
 }
 
 export function PollList({ polls }: PollListProps) {
-    const [activeTheme, setActiveTheme] = useState<SimplifiedTheme>('Alle');
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Read from URL or default to 'Alle'
+    const activeTheme = (searchParams.get('topic') as SimplifiedTheme) || 'Alle';
+
+    const handleThemeChange = (theme: SimplifiedTheme) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (theme === 'Alle') {
+            params.delete('topic');
+        } else {
+            params.set('topic', theme);
+        }
+
+        // Update URL without full reload (scroll: false to keep position)
+        router.replace(`/?${params.toString()}`, { scroll: false });
+    };
 
     const filteredPolls = polls.filter(poll => {
         if (activeTheme === 'Alle') return true;
@@ -28,7 +44,7 @@ export function PollList({ polls }: PollListProps) {
                     {THEMES.map((theme) => (
                         <button
                             key={theme}
-                            onClick={() => setActiveTheme(theme)}
+                            onClick={() => handleThemeChange(theme)}
                             className={`
                                 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200
                                 ${activeTheme === theme
@@ -53,7 +69,7 @@ export function PollList({ polls }: PollListProps) {
                 ) : (
                     <div className="text-center py-20">
                         <p className="text-slate-400 font-medium">Keine Abstimmungen zu diesem Thema gefunden.</p>
-                        <button onClick={() => setActiveTheme('Alle')} className="mt-4 text-indigo-600 font-bold hover:underline">
+                        <button onClick={() => handleThemeChange('Alle')} className="mt-4 text-indigo-600 font-bold hover:underline">
                             Alle anzeigen
                         </button>
                     </div>

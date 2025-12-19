@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import React from 'react';
 import Link from 'next/link';
 import { PollCard } from '@/components/PollCard';
 import { PollListItem } from '../components/PollListItem';
@@ -101,7 +102,11 @@ export default async function HomePage() {
         </div>
 
         {/* Polls Stack */}
-        <PollList polls={polls || []} />
+        <div className="space-y-8">
+          <React.Suspense fallback={<div className="text-center p-8">Lade Filter...</div>}>
+            <PollList polls={polls || []} />
+          </React.Suspense>
+        </div>
 
         {/* Footer Info */}
         <div className="mt-16 text-center">

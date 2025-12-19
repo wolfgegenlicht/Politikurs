@@ -32,15 +32,52 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
     );
     // Removed local partyColors definition
 
-    // Chart.js Data Configuration
-    const totalVotes = results.reduce((acc, r) => acc + r.votes_yes + r.votes_no + r.votes_abstain + r.votes_no_show, 0);
+    // --- AGGREGATION LOGIC ---
+    let totalYes = 0;
+    let totalNo = 0;
+    let totalAbstain = 0;
+    let totalNoShow = 0;
+
+    // Breakdown maps: Category index -> [{ party: string, count: number }]
+    // 0: Yes, 1: No, 2: Abstain, 3: NoShow
+    const breakdowns: Record<number, { party: string; count: number }[]> = {
+        0: [], 1: [], 2: [], 3: []
+    };
+
+    sortedResults.forEach(r => {
+        // Vote Flip: "Yes" in DB became "No" in meaning, etc.
+        const yesCount = voteFlip ? r.votes_no : r.votes_yes;
+        const noCount = voteFlip ? r.votes_yes : r.votes_no;
+        const abstainCount = r.votes_abstain;
+        const noShowCount = r.votes_no_show;
+
+        totalYes += yesCount;
+        totalNo += noCount;
+        totalAbstain += abstainCount;
+        totalNoShow += noShowCount;
+
+        if (yesCount > 0) breakdowns[0].push({ party: r.fraction_label, count: yesCount });
+        if (noCount > 0) breakdowns[1].push({ party: r.fraction_label, count: noCount });
+        if (abstainCount > 0) breakdowns[2].push({ party: r.fraction_label, count: abstainCount });
+        if (noShowCount > 0) breakdowns[3].push({ party: r.fraction_label, count: noShowCount });
+    });
+
+    // Sort breakdowns by count desc
+    Object.values(breakdowns).forEach(list => list.sort((a, b) => b.count - a.count));
+
+    const totalVotes = totalYes + totalNo + totalAbstain + totalNoShow;
 
     const chartData = {
-        labels: sortedResults.map(r => r.fraction_label),
+        labels: ['Dafür', 'Dagegen', 'Enthaltung', 'Nicht beteiligt'],
         datasets: [
             {
-                data: sortedResults.map(r => r.votes_yes + r.votes_no + r.votes_abstain + r.votes_no_show),
-                backgroundColor: sortedResults.map(r => getPartyColor(r.fraction_label)),
+                data: [totalYes, totalNo, totalAbstain, totalNoShow],
+                backgroundColor: [
+                    '#22c55e', // Green-500
+                    '#ef4444', // Red-500
+                    '#94a3b8', // Slate-400
+                    '#e2e8f0', // Slate-200
+                ],
                 borderWidth: 0,
                 hoverOffset: 4,
             },
@@ -51,11 +88,11 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
         cutout: '75%',
         plugins: {
             legend: {
-                display: false // We use our custom legend
+                display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                padding: 12,
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', // Slate-900
+                padding: 16,
                 titleFont: {
                     family: 'inherit',
                     size: 16,
@@ -63,30 +100,21 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                 },
                 bodyFont: {
                     family: 'inherit',
-                    size: 14
+                    size: 13
                 },
-                cornerRadius: 12,
+                cornerRadius: 16,
                 displayColors: true,
                 callbacks: {
                     label: function (context: any) {
-                        const index = context.dataIndex;
-                        const result = sortedResults[index];
-                        const total = result.votes_yes + result.votes_no + result.votes_abstain + result.votes_no_show;
-                        const percentage = totalVotes > 0 ? Math.round((total / totalVotes) * 100) : 0;
+                        return ''; // Hide default label
+                    },
+                    afterBody: function (context: any) {
+                        const index = context[0].dataIndex; // 0=Yes, 1=No...
+                        const breakdown = breakdowns[index];
 
-                        const displayYes = voteFlip ? result.votes_no : result.votes_yes;
-                        const displayNo = voteFlip ? result.votes_yes : result.votes_no;
-                        const displayAbstain = result.votes_abstain;
-                        const displayNoShow = result.votes_no_show;
+                        if (!breakdown || breakdown.length === 0) return ['Keine Stimmen'];
 
-                        return [
-                            ` ${result.fraction_label}: `,
-                            ` ${total} Sitze (${percentage}%)`,
-                            ` Dafür: ${displayYes}`,
-                            ` Dagegen: ${displayNo}`,
-                            ...(displayAbstain > 0 ? [` Enthaltung: ${displayAbstain}`] : []),
-                            ...(displayNoShow > 0 ? [` Nicht bet.: ${displayNoShow}`] : [])
-                        ];
+                        return breakdown.map(item => ` ${item.party}: ${item.count}`); // Simple list
                     }
                 }
             }
@@ -118,20 +146,66 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                 </div>
             )}
 
-            {/* Partei-Ergebnisse */}
+            {/* Global Aggregated Pie Chart */}
+            <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight text-center">
+                    Gesamtergebnis
+                </h3>
+                <div className="flex flex-col items-center justify-center gap-12">
+
+                    {/* Pie Chart */}
+                    <div className="relative w-72 h-72 flex-shrink-0 isolate">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center -z-10">
+                            <span className="text-4xl font-black text-slate-900">
+                                {totalVotes}
+                            </span>
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Stimmen</span>
+                        </div>
+                        <div className="relative z-10 w-full h-full">
+                            <Doughnut data={chartData} options={chartOptions} />
+                        </div>
+                    </div>
+
+                    {/* Custom Legend for Categories */}
+                    <div className="flex flex-wrap justify-center gap-4 w-full">
+                        {/* Yes */}
+                        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-100">
+                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span className="font-bold text-green-700 text-sm">Dafür ({totalYes})</span>
+                        </div>
+                        {/* No */}
+                        <div className="flex items-center gap-2 px-4 py-2 bg-red-50 rounded-full border border-red-100">
+                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                            <span className="font-bold text-red-700 text-sm">Dagegen ({totalNo})</span>
+                        </div>
+                        {/* Abstain */}
+                        {totalAbstain > 0 && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
+                                <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                                <span className="font-bold text-slate-600 text-sm">Enth. ({totalAbstain})</span>
+                            </div>
+                        )}
+                        {/* No Show */}
+                        {totalNoShow > 0 && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
+                                <div className="w-3 h-3 rounded-full bg-slate-200"></div>
+                                <span className="font-bold text-slate-400 text-sm">Nicht bet. ({totalNoShow})</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Detailed Party Breakdown Grid */}
             <div>
                 <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight">
-                    Bundestag-Ergebnisse
+                    Details nach Fraktion
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {sortedResults.map((result) => {
                         const total = result.votes_yes + result.votes_no + result.votes_abstain + result.votes_no_show;
 
                         // FLIP LOGIC:
-                        // If voteFlip is true:
-                        // - Original "Yes" (Parliament) -> displayed as "Dagegen" (Red)
-                        // - Original "No" (Parliament) -> displayed as "Dafür" (Green)
-
                         const displayYes = voteFlip ? result.votes_no : result.votes_yes;
                         const displayNo = voteFlip ? result.votes_yes : result.votes_no;
 
@@ -216,54 +290,6 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                             </div>
                         );
                     })}
-                </div>
-            </div>
-
-            {/* Global Party Distribution Pie Chart */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
-                <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight text-center">
-                    Sitzverteilung der Abstimmung
-                </h3>
-                <div className="flex flex-col items-center justify-center gap-12">
-
-                    {/* Pie Chart with forced stacking context */}
-                    <div className="relative w-72 h-72 flex-shrink-0 isolate">
-                        {/* Center Text: z-0 to sit behind */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center -z-10">
-                            <span className="text-4xl font-black text-slate-900">
-                                {totalVotes}
-                            </span>
-                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Stimmen</span>
-                        </div>
-
-                        {/* Chart: z-10 to sit on top (including tooltips) */}
-                        <div className="relative z-10 w-full h-full">
-                            <Doughnut data={chartData} options={chartOptions} />
-                        </div>
-                    </div>
-
-                    {/* Legend (Below) */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full max-w-4xl">
-                        {sortedResults.map((result) => {
-                            const total = result.votes_yes + result.votes_no + result.votes_abstain + result.votes_no_show;
-                            const percent = totalVotes > 0 ? (total / totalVotes) * 100 : 0;
-
-                            if (total === 0) return null;
-
-                            return (
-                                <div key={result.fraction_id} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100 transition-colors text-center">
-                                    <div
-                                        className="w-3 h-3 rounded-full shadow-sm mb-3"
-                                        style={{ backgroundColor: getPartyColor(result.fraction_label) }}
-                                    />
-                                    <span className="font-bold text-slate-700 text-sm mb-1 line-clamp-1">{result.fraction_label}</span>
-                                    <div className="text-xs text-slate-500 font-medium">
-                                        {total} Sitze <span className="text-slate-300">|</span> {Math.round(percent)}%
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
                 </div>
             </div>
         </div>
