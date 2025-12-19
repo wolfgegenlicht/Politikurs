@@ -30,7 +30,7 @@ export function PollListItem({ poll }: { poll: Poll }) {
         : poll.poll_questions;
 
     // Handler for saving vote (locally/temporarily) and redirecting
-    const handleVote = async (vote: 'yes' | 'no') => {
+    const handleVote = async (vote: 'yes' | 'no' | 'skip') => {
         // Opt: Save vote via API here, or just redirect and let Detail page handle it?
         // User said "After I said 'dafür' or 'dagegen' I'll get redirected to the page, where i can see the details."
         // Let's call the API to save the vote first, then redirect.

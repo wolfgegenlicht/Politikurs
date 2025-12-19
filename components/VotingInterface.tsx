@@ -7,9 +7,10 @@ import { ThumbsUp, ThumbsDown, Check, X, Loader2 } from 'lucide-react';
 interface VotingInterfaceProps {
     pollId: number;
     initialVote?: 'yes' | 'no' | null;
+    onVoteChange?: (vote: 'yes' | 'no') => void;
 }
 
-export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
+export function VotingInterface({ pollId, initialVote, onVoteChange }: VotingInterfaceProps) {
     const [currentVote, setCurrentVote] = useState<'yes' | 'no' | null>(initialVote || null);
     const [voting, setVoting] = useState(false);
     const router = useRouter();
@@ -34,6 +35,11 @@ export function VotingInterface({ pollId, initialVote }: VotingInterfaceProps) {
             const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
             votes[pollId] = vote;
             localStorage.setItem('user_votes', JSON.stringify(votes));
+        }
+
+        // Notify parent
+        if (onVoteChange) {
+            onVoteChange(vote);
         }
 
         try {

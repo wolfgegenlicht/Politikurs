@@ -220,8 +220,31 @@ Deine Aufgabe: Analysiere den Gesetzesentwurf und erstelle 3 Dinge:
 2. Eine einfache Frage ("Bist du dafür...?").
 3. Eine ultra-kurze Erklärung ("Was bedeutet das?").
 
+PRIORITÄT: Die "question" muss logisch exakt zum Originaltitel ("label") passen.
+- Wenn der Titel heißt: "Waffenlieferungen stoppen"
+- Dann MUSS die Frage heißen: "Sollen Waffenlieferungen gestoppt werden?" (Ja = Stoppen)
+- FALSCH wäre: "Sollen Waffen geliefert werden?" (Ja = Liefern -> WIDERSPRUCH zum Titel)
+
+Versuche die Frage so zu formulieren, dass "Ja" im Titel auch "Ja" in der Frage bedeutet.
+Vermeide "vote_flip" wenn möglich!
+Nutze "vote_flip" NUR, wenn der Originaltitel eine doppelte Verneinung enthält oder extrem verwirrend ist (z.B. "Ablehnung des Antrags auf Keine Waffen").
+
+SPECIAL LOGIC - PARLIAMENTARY RECOMMENDATIONS (Beschlussempfehlung):
+Oft lautet der Text: "Beschlussempfehlung... Ablehnung des Antrags X" oder "X nicht unterbinden".
+In diesem Fall:
+1. Ignoriere die "Ablehnung". Konzentriere dich auf den Kern-Antrag "X".
+2. Schreibe den Titel/Frage so, als ginge es um die Annahme von "X".
+3. Setze "vote_flip": true.
+
+BEISPIEL:
+Text: "Atomgeschäfte nicht unterbinden (Beschlussempfehlung)"
+-> Analyse: Es gibt einen Antrag "Atomgeschäfte verbieten". Die Empfehlung will ihn ablehnen ("nicht unterbinden").
+-> Simplified Title: "Atomgeschäfte mit Russland verbieten" (Kern-Thema).
+-> Question: "Sollen Atomgeschäfte verboten werden?"
+-> Vote Flip: true (Weil JA zur Empfehlung = NEIN zum Verbot).
+
 WICHTIG: Befolge strikt diese 10 Regeln für "Klare Sprache":
-1. Vermeide doppelte Verneinungen (Positiv formulieren).
+1. Vermeide doppelte Verneinungen (z.B. "nicht ablehnen"). ABER: Wörter wie "Stoppen", "Verbieten", "Beenden" sind ERLAUBT und SOLLEN genutzt werden, wenn sie im Titel vorkommen! Mache aus "Stoppen" NIEMALS "Weiter erlauben".
 2. Löse Substantivierungen auf (Verben statt Wörter auf -ung, -heit, -keit).
 3. Nutze Aktiv statt Passiv (Wer handelt?).
 4. Sei konkret (Klartext statt vage Begriffe).
@@ -233,10 +256,9 @@ WICHTIG: Befolge strikt diese 10 Regeln für "Klare Sprache":
 10. Mach es so einfach wie möglich (Tinder-Style, sofort verständlich).
 
 SPECIAL LOGIC - VOTE FLIP DETECTION:
-Manche Anträge sind negativ formuliert (z.B. "Keine Waffen liefern"). Ein "Ja" zu diesem Antrag bedeutet "Nein" zu Waffen.
-Wenn du die Frage positiv umformulierst (z.B. "Soll Deutschland Waffen liefern?"), dreht sich die Bedeutung von "Ja" um.
-Originales "Ja" (Keine Waffen) != Frage "Ja" (Waffen).
-In diesem Fall setze "vote_flip": true.
+Manche Anträge sind negativ formuliert.
+NUR wenn du die Frage inhaltlich umdrehen MUSST (um doppelte Verneinung zu vermeiden), setze "vote_flip": true.
+Sonst "vote_flip": false.
 
 FORMAT: Antworte NUR als valides JSON Objekt:
 {

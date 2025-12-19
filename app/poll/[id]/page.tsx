@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import { VotingInterface } from '@/components/VotingInterface';
-import { ResultsChart } from '@/components/ResultsChart';
+import { PollInteraction } from '@/components/PollInteraction';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -80,7 +79,7 @@ export default async function PollDetailPage({
         <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
                 <Link
-                    href="/"
+                    href={`/#poll-${pollId}`}
                     className="inline-flex items-center text-slate-400 hover:text-slate-900 mb-8 transition-colors text-sm font-semibold tracking-wide uppercase"
                 >
                     <span className="mr-2">←</span> Zurück
@@ -119,33 +118,14 @@ export default async function PollDetailPage({
                             </div>
                         )}
 
-                        {/* Voting Interface */}
-                        <div className="mb-16">
-                            <VotingInterface
-                                pollId={pollId}
-                                initialVote={userVote?.user_vote || null}
-                            />
-                        </div>
-
-                        {/* AI Explanation "Was bedeutet das?" */}
-                        {explanation && (
-                            <div className="mb-12 bg-indigo-50/50 p-8 rounded-3xl border border-indigo-50">
-                                <h3 className="text-sm font-bold text-indigo-900 mb-4 flex items-center uppercase tracking-widest">
-                                    💡 Kurz erklärt
-                                </h3>
-                                <p className="text-lg text-slate-700 leading-relaxed font-medium">
-                                    {explanation}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Results */}
-                        <div className="pt-10 border-t border-slate-100">
-                            <ResultsChart
-                                results={poll.vote_results || []}
-                                voteFlip={questionData?.vote_flip || false}
-                            />
-                        </div>
+                        {/* Interactive Poll Section */}
+                        <PollInteraction
+                            pollId={pollId}
+                            initialVote={userVote?.user_vote || null}
+                            explanation={explanation}
+                            results={poll.vote_results || []}
+                            voteFlip={questionData?.vote_flip || false}
+                        />
                     </div>
                 </div>
 

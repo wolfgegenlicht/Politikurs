@@ -2,6 +2,7 @@
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { getPartyColor } from '@/lib/partyUtils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -29,27 +30,7 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
     const sortedResults = [...results].sort((a, b) =>
         a.fraction_label.localeCompare(b.fraction_label)
     );
-
-    const partyColors: Record<string, string> = {
-        'CDU/CSU': '#000000', // Black
-        'SPD': '#E3000F',     // SPD Red
-        'AfD': '#009EE0',     // AfD Blue
-        'FDP': '#FFED00',     // FDP Yellow
-        'GRÜNEN': '#46962b',  // Green
-        'BÜNDNIS 90/DIE GRÜNEN': '#46962b',
-        'DIE LINKE': '#BE3075', // Magenta
-        'BSW': '#771e3d',      // BSW Dark Red
-        'SSW': '#003C8F',      // SSW Blue
-        'fraktionslos': '#94a3b8' // Slate-400
-    };
-
-    function getPartyColor(label: string): string {
-        const lowerLabel = label.toLowerCase();
-        for (const [key, color] of Object.entries(partyColors)) {
-            if (lowerLabel.includes(key.toLowerCase())) return color;
-        }
-        return '#94a3b8'; // Slate-400
-    }
+    // Removed local partyColors definition
 
     // Chart.js Data Configuration
     const totalVotes = results.reduce((acc, r) => acc + r.votes_yes + r.votes_no + r.votes_abstain + r.votes_no_show, 0);
