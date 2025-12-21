@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle } from 'lucide-react';
+import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface PollCardProps {
@@ -23,6 +23,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
 
     const [userVote, setUserVote] = useState<'yes' | 'no' | 'skip' | null>(null);
     const [isDetailsMode, setIsDetailsMode] = useState(false);
+    const [isOriginalTitleOpen, setIsOriginalTitleOpen] = useState(false);
 
     // Load vote from localStorage on mount
     useState(() => {
@@ -127,11 +128,23 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
 
                 {/* Original Title (Collapsed/Subtle) */}
                 <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-700">
-                    <div className="flex items-center gap-1.5 mb-2">
-                        <p className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Originaltitel</p>
+                    <button
+                        onClick={() => setIsOriginalTitleOpen(!isOriginalTitleOpen)}
+                        className="flex items-center gap-1.5 mb-2 group/accordion w-full text-left"
+                    >
+                        {isOriginalTitleOpen ? (
+                            <ChevronDown size={12} className="text-slate-400 group-hover/accordion:text-indigo-600 transition-colors" />
+                        ) : (
+                            <ChevronRight size={12} className="text-slate-400 group-hover/accordion:text-indigo-600 transition-colors" />
+                        )}
 
-                        <div className="group/tooltip relative flex items-center">
-                            <HelpCircle size={10} className="text-slate-400 cursor-help" />
+                        <p className="text-[10px] uppercase text-slate-400 font-bold tracking-wider group-hover/accordion:text-indigo-600 transition-colors">Originaltitel</p>
+
+                        <div
+                            className="group/tooltip relative flex items-center ml-1"
+                            onClick={(e) => e.stopPropagation()} // Prevent accordion toggle when clicking tooltip
+                        >
+                            <HelpCircle size={10} className="text-slate-400 cursor-help hover:text-indigo-600 transition-colors" />
 
                             {/* Tooltip */}
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover/tooltip:translate-y-0">
@@ -141,10 +154,13 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 transform translate-y-1/2 rotate-45"></div>
                             </div>
                         </div>
-                    </div>
-                    <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                        {label}
-                    </p>
+                    </button>
+
+                    {isOriginalTitleOpen && (
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
+                            {label}
+                        </p>
+                    )}
                 </div>
             </div>
 
