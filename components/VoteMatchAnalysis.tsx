@@ -85,7 +85,7 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
     const matchLabel = targetsParliamentYes ? "haben dem Original-Antrag zugestimmt" : "haben den Original-Antrag abgelehnt";
 
     return (
-        <div className="bg-gradient-to-br from-indigo-50 to-slate-50 border border-indigo-100 rounded-3xl p-8 shadow-sm mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="bg-gradient-to-br from-indigo-50 to-slate-50 border border-indigo-100 rounded-3xl p-8  mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h3 className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2">
                 <UserCheck size={18} />
                 Dein Match
@@ -93,7 +93,7 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
 
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 {/* User Choice */}
-                <div className="flex-shrink-0 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center min-w-[140px]">
+                <div className="flex-shrink-0 bg-white p-6 rounded-2xl  border border-slate-200 flex flex-col items-center justify-center min-w-[140px]">
                     <span className="text-xs text-slate-400 font-bold uppercase mb-2">Du hast gestimmt</span>
                     <div className="p-3 rounded-full bg-slate-50 mb-2">
                         {userIcon}
@@ -119,10 +119,10 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
                             {matchingParties.map(party => (
                                 <div
                                     key={party.fraction_id}
-                                    className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm transition-transform hover:-translate-y-1"
+                                    className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-slate-200  transition-transform hover:-translate-y-1"
                                 >
                                     <div
-                                        className="w-3 h-3 rounded-full shadow-sm"
+                                        className="w-3 h-3 rounded-full "
                                         style={{ backgroundColor: getPartyColor(party.fraction_label) }}
                                     />
                                     <span className="font-bold text-slate-700 text-sm">

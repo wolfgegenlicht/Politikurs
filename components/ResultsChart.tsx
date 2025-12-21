@@ -147,7 +147,7 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
             )}
 
             {/* Global Aggregated Pie Chart */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 ">
                 <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight text-center">
                     Gesamtergebnis
                 </h3>
@@ -180,14 +180,14 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                         </div>
                         {/* Abstain */}
                         {totalAbstain > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-200">
                                 <div className="w-3 h-3 rounded-full bg-slate-400"></div>
                                 <span className="font-bold text-slate-600 text-sm">Enth. ({totalAbstain})</span>
                             </div>
                         )}
                         {/* No Show */}
                         {totalNoShow > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-200">
                                 <div className="w-3 h-3 rounded-full bg-slate-200"></div>
                                 <span className="font-bold text-slate-400 text-sm">Nicht bet. ({totalNoShow})</span>
                             </div>
@@ -215,7 +215,7 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                         const noShowPercent = total > 0 ? (result.votes_no_show / total) * 100 : 0;
 
                         return (
-                            <div key={result.fraction_id} className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300">
+                            <div key={result.fraction_id} className="bg-white border border-slate-200 p-6 rounded-3xl hover:shadow-lg transition-all duration-300">
                                 <div className="flex items-start justify-between mb-6">
                                     <div className="flex items-center gap-3">
                                         <div

@@ -72,7 +72,7 @@ export default async function HomePage() {
             <p className="text-lg text-gray-600 mb-8">
               Teste deine politische Meinung zu echten Bundestagsabstimmungen
             </p>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white p-6 rounded-lg ">
               <p className="text-gray-500">
                 Noch keine Abstimmungen geladen. Bitte synchronisiere die Daten.
               </p>

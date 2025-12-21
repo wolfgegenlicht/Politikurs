@@ -86,7 +86,7 @@ export default async function PollDetailPage({
             <div className="max-w-2xl mx-auto">
                 <BackButton currentPollId={pollId} />
 
-                <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden mb-8 border border-slate-100">
+                <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden mb-8 border border-slate-200">
                     <div className="p-4 sm:p-12">
                         <div className="flex items-center justify-between mb-8">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-full">
@@ -111,7 +111,7 @@ export default async function PollDetailPage({
 
                         {/* Original Title (Moved Up) */}
                         {simplifiedTitle && (
-                            <div className="mb-10 pt-6 border-t border-slate-100">
+                            <div className="mb-10 pt-6 border-t border-slate-200">
                                 <p className="text-[10px] uppercase text-slate-400 font-bold mb-2 tracking-wider">Offizieller Titel</p>
                                 <p className="text-sm text-slate-500 font-medium leading-relaxed italic">
                                     "{poll.label}"
@@ -133,7 +133,7 @@ export default async function PollDetailPage({
                 {/* Background Info (Refined) */}
                 {
                     cleanDescription && (
-                        <div className="bg-white shadow-sm rounded-3xl p-8 sm:p-12 border border-slate-100">
+                        <div className="bg-white  rounded-3xl p-8 sm:p-12 border border-slate-200">
                             <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
                             <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
                                 {cleanDescription

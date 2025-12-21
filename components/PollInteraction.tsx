@@ -50,7 +50,7 @@ export function PollInteraction({ pollId, initialVote, explanation, results, vot
             )}
 
             {/* Results & Analysis */}
-            <div className="pt-10 border-t border-slate-100">
+            <div className="pt-10 border-t border-slate-200">
 
                 {/* Vote Match Section - Reactive to currentVote */}
                 <VoteMatchAnalysis

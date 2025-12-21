@@ -77,10 +77,10 @@ export function VotingInterface({ pollId, initialVote, onVoteChange }: VotingInt
                     disabled={voting}
                     className={`
                         group relative flex flex-col items-center justify-center p-8 rounded-[2rem] transition-all duration-300
-                        border-2 shadow-sm hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                        border-2  hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                         ${currentVote === 'no'
                             ? 'bg-red-50 border-red-500 ring-4 ring-red-100'
-                            : 'bg-white border-slate-100 hover:border-red-200 hover:bg-red-50/50'}
+                            : 'bg-white border-slate-200 hover:border-red-200 hover:bg-red-50/50'}
                     `}
                 >
                     <div className={`
@@ -103,10 +103,10 @@ export function VotingInterface({ pollId, initialVote, onVoteChange }: VotingInt
                     disabled={voting}
                     className={`
                         group relative flex flex-col items-center justify-center p-8 rounded-[2rem] transition-all duration-300
-                        border-2 shadow-sm hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                        border-2  hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                         ${currentVote === 'yes'
                             ? 'bg-green-50 border-green-500 ring-4 ring-green-100'
-                            : 'bg-white border-slate-100 hover:border-green-200 hover:bg-green-50/50'}
+                            : 'bg-white border-slate-200 hover:border-green-200 hover:bg-green-50/50'}
                     `}
                 >
                     <div className={`

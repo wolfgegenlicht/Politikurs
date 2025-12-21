@@ -85,7 +85,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
         : "";
 
     return (
-        <div className={`group relative w-full h-full bg-white dark:bg-slate-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] ${cardStatusClass}`}>
+        <div className={`group relative w-full h-full bg-white dark:bg-slate-800 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] ${cardStatusClass}`}>
 
             {/* Skipped Badge */}
             {userVote === 'skip' && (
@@ -127,7 +127,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                 </p>
 
                 {/* Original Title (Collapsed/Subtle) */}
-                <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-700">
+                <div className="mt-auto pt-6 border-t border-slate-200 dark:border-slate-700">
                     <button
                         onClick={() => setIsOriginalTitleOpen(!isOriginalTitleOpen)}
                         className="flex items-center gap-1.5 mb-2 group/accordion w-full text-left"
@@ -249,11 +249,11 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
 
             {/* Action Buttons (Homepage only) */}
             {onVote && (
-                <div className="p-4 grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 transition-opacity duration-300">
+                <div className="p-4 grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 transition-opacity duration-300">
                     <button
                         onClick={(e) => { e.preventDefault(); handleVote('no'); }}
                         className={`
-                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md
+                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95  hover:shadow-md
                             ${userVote === 'no'
                                 ? 'bg-red-500 text-white border-red-600 ring-2 ring-red-200'
                                 : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500'}
@@ -265,7 +265,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                     <button
                         onClick={(e) => { e.preventDefault(); handleVote('yes'); }}
                         className={`
-                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95 shadow-sm hover:shadow-md
+                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95  hover:shadow-md
                             ${userVote === 'yes'
                                 ? 'bg-green-500 text-white border-green-600 ring-2 ring-green-200'
                                 : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500'}

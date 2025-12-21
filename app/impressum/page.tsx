@@ -10,7 +10,7 @@ export default function ImpressumPage() {
                     <span className="mr-2">←</span> Zurück zur Startseite
                 </Link>
 
-                <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden border border-slate-100 p-8 sm:p-12">
+                <div className="bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] overflow-hidden border border-slate-200 p-8 sm:p-12">
                     <h1 className="text-3xl font-black text-slate-900 mb-8 tracking-tight">Impressum</h1>
 
                     <div className="prose prose-slate prose-lg max-w-none">
@@ -35,7 +35,7 @@ export default function ImpressumPage() {
                             Wolfgang Stefani (Anschrift siehe oben)
                         </p>
 
-                        <hr className="my-8 border-slate-100" />
+                        <hr className="my-8 border-slate-200" />
 
                         <p>
                             <strong>Hinweis nach §36 VSBG</strong><br />
