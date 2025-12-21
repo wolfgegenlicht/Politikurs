@@ -138,8 +138,8 @@ export default async function PollDetailPage({
                             <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
                                 {cleanDescription
                                     .split('. ')
-                                    .map(s => s.trim())
-                                    .filter(s => s.length > 0)
+                                    .map((s: string) => s.trim())
+                                    .filter((s: string) => s.length > 0)
                                     .map((sentence: string, i: number) => (
                                         <p key={i} className="mb-4">
                                             {sentence.endsWith('.') ? sentence : `${sentence}.`}
