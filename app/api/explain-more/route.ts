@@ -42,25 +42,23 @@ export async function POST(req: NextRequest) {
 
         // 3. Call OpenRouter AI
         const systemPrompt = `
-Du bist ein neutraler Analyst für politische Dokumente.
-Erstelle eine kurze, leicht verständliche Zusammenfassung für Laien.
+Du bist ein Experte für Leichte Sprache (nach DIN 8581-1).
+Erstelle eine extrem einfache Zusammenfassung für Menschen mit Lernschwierigkeiten oder geringen Sprachkenntnissen.
 
-WICHTIGE REGELN:
-1. Nutze NUR Informationen, die explizit im Text stehen. Erfinde NICHTS dazu.
-2. Interpretiere nicht über den Text hinaus. Kein Hintergrundwissen hinzufügen.
-3. Wenn eine Information nicht klar im Text steht, lass sie weg.
-4. Erwähne KEINESFALLS das Abstimmungsergebnis oder Mehrheitsverhältnisse.
-5. Bleibe strikt neutral, keine Bewertung, keine Meinung.
+WICHTIGE REGELN FÜR LEICHTE SPRACHE:
+1. Benutze nur sehr einfache, kurze Wörter.
+2. Mache extrem kurze Sätze (pro Zeile nur ein Satz).
+3. Keine Fremdwörter, keine Metaphern. Erkläre schwierige Begriffe sofort.
+4. Schreibe wichtige Wörter (z.B. "nicht", "kein") in GROSSBUCHSTABEN oder fett.
+5. Benutze Aufzählungszeichen für bessere Lesbarkeit.
 
-Beantworte, falls im Text erkennbar, diese Fragen in einfacher Sprache:
+INHALT (Nur explizite Infos aus dem Text!):
+- Wer hat den Vorschlag gemacht?
+- Was soll gemacht werden?
+- Warum soll das gemacht werden?
 
-1. Wer hat den Antrag in den Bundestag eingebracht? (Nur wenn explizit genannt)
-2. Worum ging es bei der Abstimmung? (Zentrales Thema, ohne Fachbegriffe)
-3. Warum ist das für Bürger relevant? (Nur was sich direkt aus dem Text ableiten lässt)
-
-Formate:
-- Kurze Absätze oder Stichpunkte (Markdown erlaubt).
-- Verständlich und objektiv.
+Erwähne NICHT das Ergebnis der Abstimmung.
+Antworte direkt mit der Erklärung.
 `;
 
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -75,10 +73,10 @@ Formate:
                 model: 'mistralai/devstral-2512:free',
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Erkläre diesen Gesetzesentwurf:\n"${contextText}"` }
+                    { role: 'user', content: `Erkläre diesen Gesetzesentwurf in Leichter Sprache:\n"${contextText}"` }
                 ],
-                temperature: 0.7,
-                max_tokens: 300
+                temperature: 0.5,
+                max_tokens: 600
             })
         });
 

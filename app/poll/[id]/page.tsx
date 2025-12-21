@@ -74,8 +74,12 @@ export default async function PollDetailPage({
     const question = questionData?.question || poll.label;
     const simplifiedTitle = questionData?.simplified_title;
     const explanation = questionData?.explanation;
-    // HTML-Tags aus Beschreibung entfernen für Background
-    const cleanDescription = (poll.description || '').replace(/<[^>]*>/g, ' ');
+    // HTML-Tags und Entities aus Beschreibung entfernen für Background
+    const cleanDescription = (poll.description || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -132,9 +136,15 @@ export default async function PollDetailPage({
                         <div className="bg-white shadow-sm rounded-3xl p-8 sm:p-12 border border-slate-100">
                             <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
                             <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
-                                {cleanDescription.split('. ').map((sentence: string, i: number) => (
-                                    <p key={i} className="mb-4">{sentence}.</p>
-                                ))}
+                                {cleanDescription
+                                    .split('. ')
+                                    .map(s => s.trim())
+                                    .filter(s => s.length > 0)
+                                    .map((sentence: string, i: number) => (
+                                        <p key={i} className="mb-4">
+                                            {sentence.endsWith('.') ? sentence : `${sentence}.`}
+                                        </p>
+                                    ))}
                             </div>
                             <a
                                 href={poll.abgeordnetenwatch_url}
