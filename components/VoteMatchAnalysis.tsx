@@ -65,15 +65,10 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
         const total = r.votes_yes + r.votes_no + r.votes_abstain + r.votes_no_show;
         if (total === 0) return false;
 
-        // Majority determination
-        // Strict majority? Or just plural? Let's say plural.
-        // Compare Yes vs No. Ignore abstain for match logic?
-        // Or > 50%? Usually > 50% is clearer.
-        // Let's use simple max(yes, no).
-        const majorityVote = r.votes_yes > r.votes_no ? 'yes' : 'no';
+        // If majority of the party abstained, don't count it for matching
+        if (r.votes_abstain > r.votes_yes && r.votes_abstain > r.votes_no) return false;
 
-        // If it's a tie or abstain is winner, we don't match? 
-        // Let's stick to strict Yes vs No majority.
+        const majorityVote = r.votes_yes > r.votes_no ? 'yes' : 'no';
         if (r.votes_yes === r.votes_no) return false; // Tie
 
         return targetsParliamentYes ? (majorityVote === 'yes') : (majorityVote === 'no');

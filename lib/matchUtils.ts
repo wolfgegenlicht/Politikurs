@@ -24,11 +24,14 @@ export function calculatePartyMatches(polls: any[], userVotes: Record<number, 'y
                 partyStats[r.fraction_id] = { label: r.fraction_label, matches: 0, total: 0 };
             }
 
-            const totalPartyVotes = r.votes_yes + r.votes_no;
-            if (totalPartyVotes === 0) return; // Party didn't participate in this poll
+            const totalVotes = r.votes_yes + r.votes_no + r.votes_abstain;
+            if (totalVotes === 0) return; // Party didn't participate
+
+            // If majority of the party abstained, don't count it for matching
+            if (r.votes_abstain > r.votes_yes && r.votes_abstain > r.votes_no) return;
 
             const partyMajority = r.votes_yes > r.votes_no ? 'yes' : 'no';
-            if (r.votes_yes === r.votes_no) return; // Skip ties for now (rare in party blocks)
+            if (r.votes_yes === r.votes_no) return; // Skip ties (too ambiguous for 'matching')
 
             // Agreement Logic (Sync with VoteMatchAnalysis.tsx)
             const matches = (userVote === 'yes' !== voteFlip) === (partyMajority === 'yes');
@@ -37,6 +40,7 @@ export function calculatePartyMatches(polls: any[], userVotes: Record<number, 'y
                 partyStats[r.fraction_id].matches++;
             }
             partyStats[r.fraction_id].total++;
+
         });
     });
 

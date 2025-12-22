@@ -8,7 +8,7 @@ const supabase = createClient(
 );
 
 async function inspectPoll() {
-    const pollId = 6355;
+    const pollId = 6165;
     console.log(`Inspecting Poll ${pollId}...`);
 
     // 1. Fetch Poll & Question
@@ -40,14 +40,12 @@ async function inspectPoll() {
     console.log("Poll Label:", poll.label);
     console.log("Questions:", JSON.stringify(poll.poll_questions, null, 2));
 
-    // 3. Check AfD Vote
-    const afdResult = poll.vote_results.find((r) => r.fraction_label.includes('AfD'));
-    console.log("AfD Result:", afdResult);
+    // 3. Output All Party Results
+    console.log("Party Results:");
+    poll.vote_results.forEach(r => {
+        console.log(`- ${r.fraction_label}: Yes=${r.votes_yes}, No=${r.votes_no}, Abstain=${r.votes_abstain}`);
+    });
 
-    if (!afdResult) {
-        console.log("No AfD result found.");
-        return;
-    }
 
     // 4. Simulate Logic
     const question = Array.isArray(poll.poll_questions) ? poll.poll_questions[0] : poll.poll_questions;
