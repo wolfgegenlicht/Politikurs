@@ -122,7 +122,7 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
                                     className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl border border-slate-200  transition-transform hover:-translate-y-1"
                                 >
                                     <div
-                                        className="w-3 h-3 rounded-full "
+                                        className="w-[14px] h-[14px] rounded-full shrink-0"
                                         style={{ backgroundColor: getPartyColor(party.fraction_label) }}
                                     />
                                     <span className="font-bold text-slate-700 text-sm">

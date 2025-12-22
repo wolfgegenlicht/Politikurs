@@ -170,25 +170,25 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                     <div className="flex flex-wrap justify-center gap-4 w-full">
                         {/* Yes */}
                         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-100">
-                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            <div className="w-[14px] h-[14px] rounded-full shrink-0bg-green-500"></div>
                             <span className="font-bold text-green-700 text-sm">Dafür ({totalYes})</span>
                         </div>
                         {/* No */}
                         <div className="flex items-center gap-2 px-4 py-2 bg-red-50 rounded-full border border-red-100">
-                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div className="w-[14px] h-[14px] rounded-full shrink-0bg-red-500"></div>
                             <span className="font-bold text-red-700 text-sm">Dagegen ({totalNo})</span>
                         </div>
                         {/* Abstain */}
                         {totalAbstain > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-200">
-                                <div className="w-3 h-3 rounded-full bg-slate-400"></div>
+                                <div className="w-[14px] h-[14px] rounded-full shrink-0bg-slate-400"></div>
                                 <span className="font-bold text-slate-600 text-sm">Enth. ({totalAbstain})</span>
                             </div>
                         )}
                         {/* No Show */}
                         {totalNoShow > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-200">
-                                <div className="w-3 h-3 rounded-full bg-slate-200"></div>
+                                <div className="w-[14px] h-[14px] rounded-full shrink-0bg-slate-200"></div>
                                 <span className="font-bold text-slate-400 text-sm">Nicht bet. ({totalNoShow})</span>
                             </div>
                         )}
