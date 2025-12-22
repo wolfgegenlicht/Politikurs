@@ -66,23 +66,25 @@ Halte dich STRENG an diese Regeln:
 
 3. INHALT:
 - Benutze NUR Informationen aus dem Text. Erfinde NICHTS dazu.
-- Erkläre NUR den Vorschlag (das Thema).
+- Ignoriere Sätze im Quell-Text, die über das Wahl-Ergebnis in-formieren.
+- Ignoriere Sätze darüber, ob ein Antrag an-ge-nommen oder ab-ge-lehnt wurde.
+- Erkläre NUR den Vor-schlag (das Thema).
 - Erkläre:
-  - Wer hat den Vorschlag gemacht? (Nur wenn es im Text steht)
-  - Was soll genau gemacht werden?
+  - Wer hat den Vor-schlag ge-macht? (Nur wenn es im Text steht)
+  - Was soll ge-nau ge-macht werden?
   - Warum ist das wichtig für die Menschen?
-- Erwähne NIEMALS das Ergebnis der Abstimmung.
+- Erwähne NIEMALS das Er-gebnis der Ab-stimmung.
 - Erwähne NIEMALS Partei-Namen (z.B. CDU, SPD, AfD, Grüne, FDP, Linke).
-- Erwähne NIEMALS welche Partei oder Gruppe dafür oder dagegen ist.
-- Schreibe NICHT: Der Bundes-Tag hat entschieden.
-- Schreibe NICHT: Der Antrag wurde ab-gelehnt.
-- Schreibe NICHT: Der Antrag wurde an-genommen.
-- Schreibe stattdessen: Der Bundes-Tag möchte ent-scheiden. Oder: In dem Vorschlag steht...
+- Erwähne NIEMALS welche Partei oder Gruppe da-für oder da-gegen ist.
+- Schreibe NICHT: Der Bundes-Tag hat ent-schieden.
+- Schreibe NICHT: Der Antrag wurde ab-ge-lehnt.
+- Schreibe NICHT: Der Antrag wurde an-ge-nommen.
+- Schreibe statt-dessen: Der Bundes-Tag möchte ent-scheiden. Oder: In dem Vor-schlag steht...
 
 4. FORMAT:
-- Benutze KEINE Aufzählungs-Zeichen (Bullets) oder Listen.
+- Benutze KEINE Auf-zählungs-Zeichen (Bullets) oder Listen.
 - Benutze Fett-Druck (**) nur für das Wort "nicht" oder "kein".
-- Gib nur den reinen Text zurück. Keine Einleitung, kein "Hier ist die Erklärung".
+- Gib nur den reinen Text zurück. Keine Ein-leitung, kein "Hier ist die Er-klärung".
 - SCHREIBE KEINEN HINWEIS ZUR ABSTIMMUNG AM ENDE.
 `;
 
