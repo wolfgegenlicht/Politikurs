@@ -1,51 +1,51 @@
-# CheckVotes 🗳️
+# PolitiKurs 🗳️
 
-**CheckVotes** (or *PolitiKurs*) helps citizens understand complex parliamentary votes by translating legislative texts into simple, neutral yes/no questions. It allows users to compare their own stance with the actual voting behavior of political parties in the Bundestag.
+**PolitiKurs** hilft Bürgerinnen und Bürgern, komplexe Bundestagsabstimmungen zu verstehen, indem legislative Texte in einfache, neutrale Ja/Nein-Fragen übersetzt werden. Die App ermöglicht es Nutzern, ihre eigene Haltung direkt mit dem tatsächlichen Abstimmungsverhalten der Parteien im Bundestag zu vergleichen.
 
 ## Features
 
--   **Simplified Questions**: Complex "legislatese" is translated into clear German using AI.
--   **Vote Matching**: See how your opinion aligns with parties (SPD, CDU/CSU, Grünen, FDP, AfD, Linke, BSW).
--   **Transparent Sources**: Direct links to official Bundestag documents and PDFs.
--   **Filtering**: Filter by topics, parties, and vote outcomes.
--   **Deep Explanations**: Request easy-to-read explanations for every bill (Leichte Sprache).
+-   **Vereinfachte Fragen**: Komplexe "Gesetzessprache" wird mittels KI in verständliches Deutsch übersetzt.
+-   **Wahl-Abgleich**: Vergleiche deine Meinung mit den Parteien (SPD, CDU/CSU, Grüne, FDP, AfD, Linke, BSW).
+-   **Transparente Quellen**: Direkte Links zu offiziellen Dokumenten und PDFs des Bundestags.
+-   **Filter**: Filtere nach Themen, Parteien und Abstimmungseregbnissen.
+-   **Deep Explanations**: Erhalte auf Wunsch einfach verständliche Erklärungen für jeden Gesetzentwurf (Leichte Sprache).
 
 ## Tech Stack
 
 -   **Frontend**: Next.js 14 (App Router), Tailwind CSS
 -   **Backend/DB**: Supabase (PostgreSQL)
--   **AI**: OpenRouter (Mistral/Llama models) for summarization and simplified language generation.
+-   **AI**: OpenRouter (Mistral/Llama Modelle) für Zusammenfassungen und Leichte Sprache.
 
-## Getting Started
+## Loslegen (Getting Started)
 
-1.  **Clone the repository**:
+1.  **Repository klonen**:
     ```bash
     git clone https://github.com/wolfgangstefani/checkvotes.git
     cd checkvotes
     ```
 
-2.  **Install dependencies**:
+2.  **Abhängigkeiten installieren**:
     ```bash
     npm install
     ```
 
-3.  **Environment Setup**:
-    Copy the example environment file and fill in your keys:
+3.  **Umgebung einrichten**:
+    Kopiere die Beispiel-Datei und trage deine Keys ein:
     ```bash
     cp .env.example .env.local
     ```
-    You will need a Supabase project and an OpenRouter API key.
+    Du benötigst ein Supabase-Projekt und einen OpenRouter API Key.
 
-4.  **Run Development Server**:
+4.  **Development Server starten**:
     ```bash
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000) to view the app.
+    Öffne [http://localhost:3000](http://localhost:3000) im Browser.
 
-## Contributing
+## Mitarbeit (Contributing)
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Wir freuen uns über Beiträge! Bitte schau in [CONTRIBUTING.md](CONTRIBUTING.md) für Details (aktuell auf Englisch/Deutsch gemischt).
 
-## License
+## Lizenz
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Dieses Projekt ist unter der MIT Lizenz veröffentlicht - siehe [LICENSE](LICENSE) Datei für Details.
