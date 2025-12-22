@@ -106,12 +106,21 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
             {/* Card Content Container */}
             <div className="p-8 flex-1 flex flex-col">
 
-                {/* Header: Date & Badge */}
+                {/* Header: Date */}
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                         {formattedDate}
                     </span>
-                    {explanation && (
+                </div>
+
+                {/* Main Heading: The Question */}
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
+                    {question}
+                </h2>
+
+                {/* Explanation Trigger (Below Title) */}
+                {explanation && (
+                    <div className="mb-6 flex justify-start">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -122,13 +131,8 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                             <Info size={14} strokeWidth={3} />
                             Was bedeutet das?
                         </button>
-                    )}
-                </div>
-
-                {/* Main Heading: The Question */}
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
-                    {question}
-                </h2>
+                    </div>
+                )}
 
                 {/* Simplified Title (Hidden for now as per user request) */}
                 {/* 
@@ -160,7 +164,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                             {/* Tooltip */}
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover/tooltip:translate-y-0">
                                 <p className="font-medium leading-relaxed text-center">
-                                    Der offizielle Titel im Bundestag ist oft lang oder kompliziert formuliert. Ich zeige dir hier zur Transparenz den offiziellen Titel, aber habe ihn für die Übersicht vereinfacht.
+                                    Der echte Name aus dem Bundestag ist oft kompliziert. Damit es für dich einfacher ist, habe ich oben eine klare Frage daraus gemacht. Hier siehst du zum Vergleich den Original-Text.
                                 </p>
                                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 transform translate-y-1/2 rotate-45"></div>
                             </div>
