@@ -18,8 +18,10 @@ export const revalidate = 60; // ISR: Revalidate every minute
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const params = await searchParams;
+
   // Check for placeholder credentials to avoid build errors
   if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('your-project')) {
     return (
@@ -64,9 +66,9 @@ export default async function HomePage({
   let polls = rawPolls || [];
 
   // --- FILTER LOGIC ---
-  const filterParty = typeof searchParams.party === 'string' ? searchParams.party : '';
-  const filterVote = typeof searchParams.vote === 'string' ? searchParams.vote : '';
-  const filterTopic = typeof searchParams.topic === 'string' ? searchParams.topic : '';
+  const filterParty = typeof params.party === 'string' ? params.party : '';
+  const filterVote = typeof params.vote === 'string' ? params.vote : '';
+  const filterTopic = typeof params.topic === 'string' ? params.topic : '';
 
   if (filterParty || filterVote || filterTopic) {
     polls = polls.filter((poll) => {
@@ -170,11 +172,13 @@ export default async function HomePage({
           </p>
         </div>
 
-        <FilterBar />
+        <React.Suspense fallback={<div className="h-16 flex items-center justify-center">Lade Filter...</div>}>
+          <FilterBar />
+        </React.Suspense>
 
         {/* Polls Stack */}
         <div className="space-y-8">
-          <React.Suspense fallback={<div className="text-center p-8">Lade Filter...</div>}>
+          <React.Suspense fallback={<div className="text-center p-8">Lade Abstimmungen...</div>}>
             <PollList polls={polls || []} />
           </React.Suspense>
         </div>
