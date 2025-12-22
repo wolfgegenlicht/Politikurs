@@ -321,15 +321,17 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
 
             {/* Details Link if voted */}
             {isDetailsMode && (
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        if (onDetailsClick) onDetailsClick();
-                    }}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
-                >
-                    Details anzeigen
-                </button>
+                <div className="p-4 pt-0">
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (onDetailsClick) onDetailsClick();
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
+                    >
+                        Details anzeigen
+                    </button>
+                </div>
             )}
             {/* Footer Status Strip (for list view without voting) */}
             {!onVote && (

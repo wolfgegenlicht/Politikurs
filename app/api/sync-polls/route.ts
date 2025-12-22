@@ -56,7 +56,33 @@ export async function GET(request: Request) {
                 .eq('id', poll.id)
                 .single();
 
-            const relatedLinks = poll.field_related_links || [];
+            const relatedLinks = (poll.field_related_links || []).map((link: any) => {
+                let url = link.url || link.uri || '';
+                if (url.startsWith('entity:node/')) {
+                    const nodeId = url.replace('entity:node/', '');
+                    url = `https://www.abgeordnetenwatch.de/node/${nodeId}`;
+                }
+                return {
+                    label: link.title || link.label || 'Link',
+                    url: url
+                };
+            });
+
+            // CHECK: Extract links from field_intro (e.g. PDFs, Drucksachen)
+            if (poll.field_intro) {
+                const linkRegex = /<a[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
+                let match;
+                while ((match = linkRegex.exec(poll.field_intro)) !== null) {
+                    const url = match[1];
+                    // Clean label: remove HTML tags inside the link text if any
+                    const label = match[2].replace(/<[^>]+>/g, '').trim() || 'Dokument';
+
+                    // Only add if not already present
+                    if (!relatedLinks.some((l: any) => l.url === url)) {
+                        relatedLinks.push({ label, url });
+                    }
+                }
+            }
 
             if (!existing) {
                 // 3. Neuen Poll speichern
@@ -277,47 +303,62 @@ FORMAT: Antworte NUR als valides JSON Objekt:
 }
 `;
 
-    // 4. AI aufrufen
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-            'X-Title': 'Bundestag Votes'
-        },
-        body: JSON.stringify({
-            model: 'mistralai/devstral-2512:free',
-            messages: [
-                {
-                    role: 'system',
-                    content: systemPrompt
+    // 4. AI aufrufen (mit Retries)
+    let result = null;
+    let retries = 0;
+    const MAX_RETRIES = 3;
+
+    while (retries < MAX_RETRIES) {
+        try {
+            console.log(`AI Generation Attempt ${retries + 1}/${MAX_RETRIES} for poll ${pollId}...`);
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+                    'X-Title': 'Bundestag Votes'
                 },
-                {
-                    role: 'user',
-                    content: `Titel: "${poll.label}"\n\nBeschreibung:\n${cleanDescription}`
-                }
-            ],
-            temperature: 0.3,
-        })
-    });
+                body: JSON.stringify({
+                    model: 'mistralai/devstral-2512:free',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: systemPrompt
+                        },
+                        {
+                            role: 'user',
+                            content: `Titel: "${poll.label}"\n\nBeschreibung:\n${cleanDescription}`
+                        }
+                    ],
+                    temperature: 0.3,
+                })
+            });
 
-    if (!response.ok) {
-        console.error(`OpenRouter API failed for poll ${pollId}: ${response.status}`);
-        return null;
-    }
+            if (!response.ok) {
+                console.error(`OpenRouter API failed for poll ${pollId}: ${response.status}`);
+                retries++;
+                continue;
+            }
 
-    const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content?.trim();
+            const aiResponse = await response.json();
+            const content = aiResponse.choices?.[0]?.message?.content?.trim();
 
-    // JSON parsen
-    let result;
-    try {
-        const jsonBlock = content.replace(/^```json\s*|\s*```$/g, '');
-        result = JSON.parse(jsonBlock);
-    } catch (e) {
-        console.error(`Failed to parse AI JSON for poll ${pollId}:`, content);
-        return null;
+            if (!content) throw new Error("Empty AI response");
+
+            // JSON parsen
+            const jsonBlock = content.replace(/^```json\s*|\s*```$/g, '');
+            result = JSON.parse(jsonBlock);
+
+            console.log(`Success generating question for poll ${pollId}`);
+            break; // Success!
+
+        } catch (e) {
+            console.error(`Attempt ${retries + 1} failed for poll ${pollId}:`, e);
+            retries++;
+            // Wait briefly? 
+            await new Promise(r => setTimeout(r, 1000));
+        }
     }
 
     if (result) {
