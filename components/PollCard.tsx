@@ -171,7 +171,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             {/* Tooltip */}
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-xs p-3 rounded-xl shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-10 pointer-events-none transform translate-y-1 group-hover/tooltip:translate-y-0">
                                 <p className="font-medium leading-relaxed text-center">
-                                    Der echte Name aus dem Bundestag ist oft kompliziert. Damit es für dich einfacher ist, habe ich oben eine klare Frage daraus gemacht. Hier siehst du zum Vergleich den Original-Text.
+                                    Der Titel aus dem Bundestag ist oft kompliziert, doppelt verneint oder zeigt den Endbeschluss. Damit es für dich einfacher ist, habe ich den Titel in eine einfach verständliche Frage umformuliert. Hier siehst du zum Vergleich den Original-Text.
                                 </p>
                                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 transform translate-y-1/2 rotate-45"></div>
                             </div>
