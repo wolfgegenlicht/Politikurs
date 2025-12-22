@@ -4,19 +4,25 @@ import { useState } from 'react';
 import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
+// Update Interface
 interface PollCardProps {
-    id: number;               // Poll ID for persistence
-    question: string;         // "Bist du dafür...?"
-    label: string;            // Original Titel
-    simplifiedTitle?: string; // AI Titel
-    explanation?: string;     // AI Erklärung
+    id: number;
+    question: string;
+    label: string;
+    simplifiedTitle?: string;
+    explanation?: string;
     related_links?: { label: string; url: string }[];
     date: string;
     accepted: boolean;
-    onVote?: (vote: 'yes' | 'no' | 'skip') => void; // Optional für Homepage Voting
+    onVote?: (vote: 'yes' | 'no' | 'skip') => void;
+    onDetailsClick?: () => void; // NEW: Explicit navigation handler
 }
 
-export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote }: PollCardProps) {
+export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote, onDetailsClick }: PollCardProps) {
+    // ... rest of state ...
+
+    // ... (keep handleVote logic as is, it updates local state) ...
+
     // Explanation State: 0 = closed, 1 = short, 2 = deep
     const [explanationMode, setExplanationMode] = useState<0 | 1 | 2>(0);
     const [deepExplanation, setDeepExplanation] = useState<string | null>(null);
@@ -318,7 +324,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        if (onVote) onVote(userVote!); // Re-trigger navigation
+                        if (onDetailsClick) onDetailsClick();
                     }}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
                 >

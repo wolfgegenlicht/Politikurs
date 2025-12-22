@@ -30,24 +30,22 @@ export function PollListItem({ poll }: { poll: Poll }) {
         ? poll.poll_questions[0]
         : poll.poll_questions;
 
-    // Handler for saving vote (locally/temporarily) and redirecting
+    // Handler for saving vote (locally/temporarily)
     const handleVote = async (vote: 'yes' | 'no' | 'skip') => {
-        // Opt: Save vote via API here, or just redirect and let Detail page handle it?
-        // User said "After I said 'dafür' or 'dagegen' I'll get redirected to the page, where i can see the details."
-        // Let's call the API to save the vote first, then redirect.
-
         try {
             await fetch('/api/vote', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pollId: poll.id, vote })
             });
-
-            router.push(`/poll/${poll.id}`);
+            // Kein Redirect mehr hier!
         } catch (e) {
-            console.error("Vote failed, redirecting anyway", e);
-            router.push(`/poll/${poll.id}`);
+            console.error("Vote failed", e);
         }
+    };
+
+    const handleDetailsClick = () => {
+        router.push(`/poll/${poll.id}`);
     };
 
     return (
@@ -55,12 +53,13 @@ export function PollListItem({ poll }: { poll: Poll }) {
             id={poll.id}
             question={questionData?.question || poll.label}
             label={poll.label}
-            simplifiedTitle={questionData?.simplified_title || poll.label} // Fallback to label if simplified title is missing
+            simplifiedTitle={questionData?.simplified_title || poll.label}
             explanation={questionData?.explanation}
             related_links={poll.related_links}
             date={poll.poll_date}
             accepted={poll.accepted}
             onVote={handleVote}
+            onDetailsClick={handleDetailsClick}
         />
     );
 }

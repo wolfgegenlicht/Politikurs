@@ -60,7 +60,7 @@ export function VotingInterface({ pollId, initialVote, onVoteChange }: VotingInt
             }
 
             // Seite neu laden um Ergebnis zu zeigen
-            router.refresh();
+            // router.refresh(); // ENTFERNT: Kein Reload mehr gewünscht
             setVoting(false);
 
         } catch (error) {
