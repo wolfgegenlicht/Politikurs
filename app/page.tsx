@@ -7,6 +7,12 @@ import { PollList } from '@/components/PollList';
 import { Footer } from '@/components/Footer';
 import { FilterBar } from '@/components/FilterBar';
 import { mapTopicsToTheme } from '@/lib/topicUtils';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bundestag Abstimmungen - PolitiKurs',
+  description: 'Durchsuche aktuelle Abstimmungen des Bundestages, übersetzt in einfache Sprache. Finde heraus, welche Partei deine Interessen vertritt.',
+};
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -84,7 +90,8 @@ export default async function HomePage({
       // 2. Party & Vote Filter
       if (filterParty) {
         // Find the generated question to get vote_flip
-        const question = poll.poll_questions && poll.poll_questions[0];
+        const rawQuestions = poll.poll_questions;
+        const question = Array.isArray(rawQuestions) ? rawQuestions[0] : rawQuestions;
         const voteFlip = question?.vote_flip || false;
 
         // Find the party's vote results

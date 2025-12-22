@@ -4,11 +4,34 @@ import Link from 'next/link';
 import { PollInteraction } from '@/components/PollInteraction';
 import { BackButton } from '@/components/BackButton';
 import { Footer } from '@/components/Footer';
+import { Metadata } from 'next';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const pollId = parseInt(id);
+
+    const { data: poll } = await supabase
+        .from('polls')
+        .select('label, poll_questions(question)')
+        .eq('id', pollId)
+        .single();
+
+    if (!poll) return { title: 'Abstimmung nicht gefunden' };
+
+    // Questions might be array or object depending on join, safe handling:
+    const qData = Array.isArray(poll.poll_questions) ? poll.poll_questions[0] : poll.poll_questions;
+    const title = qData?.question || poll.label;
+
+    return {
+        title: title,
+        description: `Wie hättest du abgestimmt? Details zur Bundestagsabstimmung: "${poll.label}".`,
+    };
+}
 
 export default async function PollDetailPage({
     params
@@ -85,8 +108,26 @@ export default async function PollDetailPage({
         .replace(/\n{3,}/g, '\n\n')
         .trim();
 
+    // Schema.org Structured Data
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Legislation',
+        'name': question, // The simplified question as main name
+        'alternateName': poll.label, // Official title
+        'legislationDate': poll.poll_date,
+        'description': explanation || cleanDescription.substring(0, 160),
+        'jurisdiction': {
+            '@type': 'AdministrativeArea',
+            'name': 'Deutschland'
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="max-w-2xl mx-auto">
                 <BackButton currentPollId={pollId} />
 

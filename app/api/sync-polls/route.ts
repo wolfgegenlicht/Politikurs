@@ -290,15 +290,17 @@ WICHTIGSTE REGELN FÜR DIE FRAGE ("question"):
 3. Die Frage muss ausschließlich mit "dafür" oder "dagegen" beantwortbar sein.
 4. Die Frage muss neutral und wertfrei formuliert sein.
 5. Die Frage muss kurz und leicht verständlich sein.
-6. Die Frage muss sich nur auf die zentrale politische Forderung des Textes beziehen.
+6. WICHTIG: Wenn es um eine Änderung (Abschaffung, Einführung) geht, frage nach der Änderung ("Soll X abgeschafft werden?"), NICHT nach dem Status Quo ("Soll X bleiben?").
 7. Die Frage muss ohne Fachbegriffe oder Paragrafen auskommen.
 8. Die Frage muss möglichst kurz und prägnant formuliert sein (Ziel: unter 15 Wörtern).
 9. Die Frage muss doppelte Verneinungen vermeiden.
 
 REGLEN FÜR DIE LOGIK ("vote_flip"):
 - Standardwert ist "false".
-- Setze "vote_flip" NUR dann auf "true", wenn du eine negative Ausgangslage (z.B. Titel "Antrag ablehnen") in eine positive Frage ("Soll angenommen werden?") umgewandelt hast.
-- Wenn Titel und Frage die gleiche Richtung haben (beide "dafür" oder beide "dagegen"), bleibt "vote_flip" false.
+- Setze "vote_flip" auf "true", wenn die Frage das Gegenteil des Titels bedeutet.
+- BEISPIEL FLIP: Titel="Antrag ablehnen" (Nein), Frage="Soll angenommen werden?" (Ja) -> FLIP=TRUE.
+- BEISPIEL KEIN FLIP: Titel="Keine Abschaffung" (Erhalten), Frage="Soll bestehen bleiben?" (Erhalten) -> FLIP=FALSE.
+- BEISPIEL FLIP SONDERFALL: Titel="Keine Abschaffung" (Erhalten), Frage="Soll abgeschafft werden?" (Abschaffen) -> FLIP=TRUE.
 - WICHTIG: Prüfe am Ende: Bedeutet ein "Ja" zur Frage das Gleiche wie ein "Ja" zum Titel?
   - Wenn JA -> vote_flip = false
   - Wenn NEIN -> vote_flip = true

@@ -14,8 +14,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PolitiKurs",
-  description: "Wie hättest du im Bundestag entschieden?",
+  title: {
+    template: '%s | PolitiKurs',
+    default: 'PolitiKurs - Politik, aber verständlich',
+  },
+  description: "Wie hättest du im Bundestag entschieden? Vergleiche deine Meinung mit den Abstimmungen der Parteien. Einfach, neutral und transparent.",
+  keywords: ["Bundestag", "Abstimmungen", "Politik", "Wahlomat", "Demokratie", "Transparenz", "PolitiKurs"],
+  openGraph: {
+    type: 'website',
+    locale: 'de_DE',
+    url: 'https://politikurs.de', // Placeholder, using generic if unknown
+    title: 'PolitiKurs - Politik, aber verständlich',
+    description: "Wie hättest du im Bundestag entschieden? Vergleiche deine Meinung mit den Abstimmungen der Parteien.",
+    siteName: 'PolitiKurs',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PolitiKurs - Politik, aber verständlich',
+    description: "Wie hättest du im Bundestag entschieden? Vergleiche deine Meinung mit den Abstimmungen der Parteien.",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pb-24`}
       >
