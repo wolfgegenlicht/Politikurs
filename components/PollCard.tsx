@@ -277,13 +277,13 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             onClick={(e) => { e.preventDefault(); setExplanationMode(0); }}
                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-colors shadow-lg shadow-indigo-200"
                         >
-                            Alles klar, verstanden! 💡
+                            Alles klar, verstanden!
                         </button>
                         <button
                             onClick={(e) => { e.preventDefault(); handleVote('skip'); }}
                             className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold py-3 rounded-2xl transition-colors text-sm"
                         >
-                            Ist mir zu kompliziert (Überspringen) ⏭️
+                            Ist mir zu kompliziert (Überspringen)
                         </button>
                     </div>
                 </div>
