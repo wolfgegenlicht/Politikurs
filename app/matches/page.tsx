@@ -109,7 +109,7 @@ export default function MatchesPage() {
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-3">
                                         <div
-                                            className="w-3 h-3 rounded-full"
+                                            className="w-[14px] h-[14px] rounded-full shrink-0"
                                             style={{ backgroundColor: getPartyColor(match.fraction_label) }}
                                         />
                                         <span className="font-black text-slate-900 tracking-tight">
