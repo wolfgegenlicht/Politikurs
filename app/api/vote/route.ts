@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
         const { pollId, vote } = await request.json();
 
         // Validierung
-        if (!pollId || !['yes', 'no'].includes(vote)) {
+        if (!pollId || (vote !== null && !['yes', 'no'].includes(vote))) {
             return NextResponse.json(
                 { error: 'Invalid vote data' },
                 { status: 400 }
@@ -34,19 +34,31 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // Vote speichern (upsert verhindert Duplikate)
-        const { error } = await supabase
-            .from('user_votes')
-            .upsert({
-                poll_id: pollId,
-                user_vote: vote,
-                session_id: sessionId
-            }, {
-                onConflict: 'poll_id,session_id'
-            });
+        let dbError;
+        if (vote === null) {
+            // Unvote: Delete the record
+            const { error } = await supabase
+                .from('user_votes')
+                .delete()
+                .eq('poll_id', pollId)
+                .eq('session_id', sessionId);
+            dbError = error;
+        } else {
+            // Vote speichern (upsert verhindert Duplikate)
+            const { error } = await supabase
+                .from('user_votes')
+                .upsert({
+                    poll_id: pollId,
+                    user_vote: vote,
+                    session_id: sessionId
+                }, {
+                    onConflict: 'poll_id,session_id'
+                });
+            dbError = error;
+        }
 
-        if (error) {
-            throw error;
+        if (dbError) {
+            throw dbError;
         }
 
         return NextResponse.json({ success: true });

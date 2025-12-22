@@ -49,14 +49,23 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
 
     const handleVote = (vote: 'yes' | 'no' | 'skip') => {
         const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
-        votes[id] = vote;
+
+        // Toggle logic: If clicking the same vote again, deselect (set to null)
+        const finalVote = userVote === vote ? null : vote;
+
+        if (finalVote === null) {
+            delete votes[id];
+        } else {
+            votes[id] = finalVote;
+        }
+
         localStorage.setItem('user_votes', JSON.stringify(votes));
 
-        setUserVote(vote);
-        setIsDetailsMode(true);
+        setUserVote(finalVote);
+        setIsDetailsMode(finalVote !== null);
         setExplanationMode(0); // Close overlays
 
-        if (onVote) onVote(vote);
+        if (onVote) onVote(finalVote as any);
     };
 
     const loadDeepExplanation = async () => {

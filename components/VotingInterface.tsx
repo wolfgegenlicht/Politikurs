@@ -26,27 +26,33 @@ export function VotingInterface({ pollId, initialVote, onVoteChange }: VotingInt
     });
 
     async function handleVote(vote: 'yes' | 'no') {
+        const finalVote = currentVote === vote ? null : vote;
         setVoting(true);
+
         // Optimistic UI update
-        setCurrentVote(vote);
+        setCurrentVote(finalVote);
 
         // Save to LocalStorage (so Overview knows about it)
         if (typeof window !== 'undefined') {
             const votes = JSON.parse(localStorage.getItem('user_votes') || '{}');
-            votes[pollId] = vote;
+            if (finalVote === null) {
+                delete votes[pollId];
+            } else {
+                votes[pollId] = finalVote;
+            }
             localStorage.setItem('user_votes', JSON.stringify(votes));
         }
 
-        // Notify parent
+        // Notify parent (can be yes | no | null now internally)
         if (onVoteChange) {
-            onVoteChange(vote);
+            onVoteChange(finalVote as any);
         }
 
         try {
             const response = await fetch('/api/vote', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pollId, vote })
+                body: JSON.stringify({ pollId, vote: finalVote })
             });
 
             if (!response.ok) {
