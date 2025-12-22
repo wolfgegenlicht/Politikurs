@@ -97,17 +97,19 @@ export default async function PollDetailPage({
                             </span>
                         </div>
 
-                        {/* Simplified Title (H1) */}
+                        {/* The Question as Main Title (H1) */}
                         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 leading-tight mb-8 tracking-tight">
-                            {simplifiedTitle || poll.label}
+                            {question}
                         </h1>
 
-                        {/* Question Badge */}
+                        {/* Simplified Title Label (Hidden for now) */}
+                        {/* 
                         <div className="mb-6 inline-block">
                             <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 flex items-center gap-3">
-                                {question}
+                                {simplifiedTitle || poll.label}
                             </h2>
                         </div>
+                        */}
 
                         {/* Original Title (Moved Up) */}
                         {simplifiedTitle && (

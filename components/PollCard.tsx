@@ -116,15 +116,17 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                     )}
                 </div>
 
-                {/* Main Title (Simplified) */}
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
-                    {displayTitle}
+                {/* Main Heading: The Question */}
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+                    {question}
                 </h2>
 
-                {/* Question Label */}
+                {/* Simplified Title (Hidden for now as per user request) */}
+                {/* 
                 <p className="text-lg font-medium text-indigo-600 dark:text-indigo-400 mb-6 flex items-center gap-2">
-                    {question}
-                </p>
+                    {displayTitle}
+                </p> 
+                */}
 
                 {/* Original Title (Collapsed/Subtle) */}
                 <div className="mt-auto pt-6 border-t border-slate-200 dark:border-slate-700">
