@@ -1,14 +1,14 @@
-# Contributing to CheckVotes
+# Contributing to PolitiKurs
 
-Thank you for your interest in contributing to CheckVotes! We welcome contributions from everyone.
+Thank you for your interest in contributing to PolitiKurs! We welcome contributions from everyone.
 
 ## Getting Started
 
 1.  **Fork the repository** on GitHub.
 2.  **Clone your fork** locally:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/checkvotes.git
-    cd checkvotes
+    git clone https://github.com/wolfgegenlicht/Politikurs.git
+    cd Politikurs
     ```
 3.  **Install dependencies**:
     ```bash

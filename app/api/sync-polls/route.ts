@@ -26,7 +26,7 @@ export async function GET(request: Request) {
             `https://www.abgeordnetenwatch.de/api/v2/polls?field_legislature=${CURRENT_LEGISLATURE_ID}&range_end=${limit}&sort_by=field_poll_date&sort_direction=desc`,
             {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (compatible; BundestagVotesApp/1.0; +https://github.com/wolfgangstefani/checkvotes)',
+                    'User-Agent': 'Mozilla/5.0 (compatible; PolitiKurs/1.0; +https://github.com/wolfgegenlicht/Politikurs)',
                     'Accept': 'application/json'
                 }
             }

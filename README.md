@@ -20,8 +20,8 @@
 
 1.  **Repository klonen**:
     ```bash
-    git clone https://github.com/wolfgangstefani/checkvotes.git
-    cd checkvotes
+    git clone https://github.com/wolfgegenlicht/Politikurs.git
+    cd Politikurs
     ```
 
 2.  **Abhängigkeiten installieren**:
