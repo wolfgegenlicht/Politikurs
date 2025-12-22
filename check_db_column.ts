@@ -2,24 +2,34 @@ import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+async function checkColumns() {
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
-async function checkColumn() {
-    console.log("Checking DB schema...");
-    const { data, error } = await supabase
-        .from('poll_questions')
-        .select('deep_explanation')
-        .limit(1);
+    const checks = [
+        { table: 'poll_questions', column: 'arguments_pro' },
+        { table: 'poll_questions', column: 'arguments_contra' },
+        { table: 'poll_questions', column: 'stakeholders' },
+        { table: 'polls', column: 'related_links' },
+    ];
 
-    if (error) {
-        console.error("Column check failed (likely missing):", error.message);
-        console.log("⚠️ Please run the migration: supabase/migrations/20251219_deep_explanation.sql");
-    } else {
-        console.log("✅ Column 'deep_explanation' exists!");
+    console.log("Checking DB schema for Decision Support columns...\n");
+
+    for (const check of checks) {
+        const { error } = await supabase
+            .from(check.table)
+            .select(check.column)
+            .limit(1);
+
+        if (error) {
+            console.error(`❌ Column '${check.column}' in table '${check.table}' is MISSING.`);
+            console.error(`   Error details: ${error.message}\n`);
+        } else {
+            console.log(`✅ Column '${check.column}' in table '${check.table}' exists.`);
+        }
     }
 }
 
-checkColumn();
+checkColumns();

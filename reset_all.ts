@@ -8,20 +8,25 @@ const supabase = createClient(
 );
 
 async function resetAll() {
-    console.log('⚠️  Clearing ALL AI questions, titles, and explanations...');
+    console.log('⚠️  Starting FULL RESET of all synced content...');
 
-    // Delete all rows in poll_questions
-    const { error, count } = await supabase
-        .from('poll_questions')
-        .delete()
-        .gt('poll_id', 0); // Safety check to target all valid IDs
+    const tables = ['user_vote_stats', 'vote_results', 'poll_questions', 'polls'];
 
-    if (error) {
-        console.error('❌ Error deleting questions:', error.message);
-    } else {
-        console.log(`✅ Success! Cleared poll_questions.`);
-        console.log(`🚀 Next Step: Run 'curl http://localhost:3000/api/sync-polls' to re-generate everything with the new logic.`);
+    for (const table of tables) {
+        console.log(`- Clearing table: ${table}...`);
+        const { error } = await supabase
+            .from(table)
+            .delete()
+            .neq('id', -1); // Delete all rows where id != -1 (effective "all")
+
+        if (error) {
+            console.warn(`  ! Note/Error in ${table}: ${error.message}`);
+        }
     }
+
+    console.log('\n✅ Database content cleared!');
+    console.log('🚀 Next Step: Visit http://localhost:3000/api/sync-polls to re-sync everything.');
+    console.log('   Note: This will take a while as the AI needs to re-generate all questions.');
 }
 
 resetAll();

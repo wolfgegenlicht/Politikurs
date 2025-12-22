@@ -74,11 +74,15 @@ export default async function PollDetailPage({
     const question = questionData?.question || poll.label;
     const simplifiedTitle = questionData?.simplified_title;
     const explanation = questionData?.explanation;
-    // HTML-Tags und Entities aus Beschreibung entfernen für Background
+    // HTML-Tags und Entities aus Beschreibung entfernen für Background (Absätze erhalten)
     const cleanDescription = (poll.description || '')
+        .replace(/<\/p>/g, '\n\n')
+        .replace(/<br\s*\/?>/g, '\n')
         .replace(/<[^>]*>/g, ' ')
         .replace(/&nbsp;/g, ' ')
-        .replace(/\s+/g, ' ')
+        .replace(/[ \t]+/g, ' ')
+        .split('\n').map((line: string) => line.trim()).join('\n')
+        .replace(/\n{3,}/g, '\n\n')
         .trim();
 
     return (
@@ -102,15 +106,6 @@ export default async function PollDetailPage({
                             {question}
                         </h1>
 
-                        {/* Simplified Title Label (Hidden for now) */}
-                        {/* 
-                        <div className="mb-6 inline-block">
-                            <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 flex items-center gap-3">
-                                {simplifiedTitle || poll.label}
-                            </h2>
-                        </div>
-                        */}
-
                         {/* Original Title (Moved Up) */}
                         {simplifiedTitle && (
                             <div className="mb-10 pt-6 border-t border-slate-200">
@@ -132,33 +127,57 @@ export default async function PollDetailPage({
                     </div>
                 </div>
 
-                {/* Background Info (Refined) */}
-                {
-                    cleanDescription && (
-                        <div className="bg-white  rounded-3xl p-8 sm:p-12 border border-slate-200">
-                            <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
-                            <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
-                                {cleanDescription
-                                    .split('. ')
-                                    .map((s: string) => s.trim())
-                                    .filter((s: string) => s.length > 0)
-                                    .map((sentence: string, i: number) => (
-                                        <p key={i} className="mb-4">
-                                            {sentence.endsWith('.') ? sentence : `${sentence}.`}
-                                        </p>
-                                    ))}
+                {/* Background Info & Links */}
+                {(cleanDescription || (poll.related_links && poll.related_links.length > 0)) && (
+                    <div className="space-y-8">
+                        {cleanDescription && (
+                            <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 border border-slate-200">
+                                <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Hintergrund</h3>
+                                <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
+                                    {cleanDescription
+                                        .split('\n\n') // Split by paragraphs now
+                                        .map((para: string, i: number) => (
+                                            <p key={i} className="mb-6 last:mb-0">
+                                                {para}
+                                            </p>
+                                        ))}
+                                </div>
+                                <div className="mt-10 pt-8 border-t border-slate-100">
+                                    <a
+                                        href={poll.abgeordnetenwatch_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-wider"
+                                    >
+                                        Details auf Abgeordnetenwatch.de →
+                                    </a>
+                                </div>
                             </div>
-                            <a
-                                href={poll.abgeordnetenwatch_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center mt-8 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors uppercase tracking-wider"
-                            >
-                                Details auf Abgeordnetenwatch.de →
-                            </a>
-                        </div>
-                    )
-                }
+                        )}
+
+                        {poll.related_links && poll.related_links.length > 0 && (
+                            <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 border border-slate-200">
+                                <h3 className="text-xl font-bold text-slate-900 mb-6 tracking-tight">Quellen & Dokumente</h3>
+                                <div className="grid grid-cols-1 gap-3">
+                                    {poll.related_links.map((link: any, i: number) => (
+                                        <a
+                                            key={i}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-100 transition-all group"
+                                        >
+                                            <span className="font-bold text-slate-700 group-hover:text-indigo-700">
+                                                {link.label}
+                                            </span>
+                                            <span className="text-indigo-600 group-hover:translate-x-1 transition-transform">→</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <Footer />
             </div>

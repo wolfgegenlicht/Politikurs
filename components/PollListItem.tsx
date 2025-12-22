@@ -19,6 +19,7 @@ interface Poll {
         simplified_title?: string;
         explanation?: string;
     }[] | null;
+    related_links?: { label: string; url: string }[];
 }
 
 export function PollListItem({ poll }: { poll: Poll }) {
@@ -56,6 +57,7 @@ export function PollListItem({ poll }: { poll: Poll }) {
             label={poll.label}
             simplifiedTitle={questionData?.simplified_title || poll.label} // Fallback to label if simplified title is missing
             explanation={questionData?.explanation}
+            related_links={poll.related_links}
             date={poll.poll_date}
             accepted={poll.accepted}
             onVote={handleVote}

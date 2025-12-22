@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown } from 'lucide-react';
+import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface PollCardProps {
@@ -10,12 +10,13 @@ interface PollCardProps {
     label: string;            // Original Titel
     simplifiedTitle?: string; // AI Titel
     explanation?: string;     // AI Erklärung
+    related_links?: { label: string; url: string }[];
     date: string;
     accepted: boolean;
     onVote?: (vote: 'yes' | 'no' | 'skip') => void; // Optional für Homepage Voting
 }
 
-export function PollCard({ id, question, label, simplifiedTitle, explanation, date, accepted, onVote }: PollCardProps) {
+export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote }: PollCardProps) {
     // Explanation State: 0 = closed, 1 = short, 2 = deep
     const [explanationMode, setExplanationMode] = useState<0 | 1 | 2>(0);
     const [deepExplanation, setDeepExplanation] = useState<string | null>(null);
@@ -126,7 +127,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                                 e.preventDefault();
                                 setExplanationMode(1);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-full transition-colors uppercase tracking-wider"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 border-amber-200 border-[1px] bg-amber-50 hover:bg-amber-100 rounded-full transition-colors uppercase tracking-wider"
                         >
                             <Info size={14} strokeWidth={3} />
                             Was bedeutet das?
@@ -198,6 +199,26 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                         <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed font-medium mb-8">
                             {explanation}
                         </p>
+
+                        {related_links && related_links.length > 0 && (
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Offizielle Quellen</h4>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {related_links.map((link, i) => (
+                                        <a
+                                            key={i}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group text-xs font-bold text-slate-600 dark:text-slate-400"
+                                        >
+                                            <span className="truncate pr-4">{link.label}</span>
+                                            <ExternalLink size={14} className="text-slate-400 shrink-0" />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-3 mt-auto">
@@ -209,7 +230,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, da
                         </button>
                         <button
                             onClick={(e) => { e.preventDefault(); loadDeepExplanation(); }}
-                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition-colors text-sm"
+                            className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold py-3 rounded-2xl transition-colors text-sm"
                         >
                             Verstehe ich leider nicht... 😕
                         </button>

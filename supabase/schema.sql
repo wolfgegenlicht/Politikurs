@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS polls (
   accepted BOOLEAN,
   legislature_id INTEGER NOT NULL,
   abgeordnetenwatch_url TEXT,
+  topics JSONB DEFAULT '[]',
+  related_links JSONB DEFAULT '[]',
   fetched_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -21,6 +23,13 @@ CREATE INDEX IF NOT EXISTS idx_polls_legislature ON polls(legislature_id);
 CREATE TABLE IF NOT EXISTS poll_questions (
   poll_id INTEGER PRIMARY KEY REFERENCES polls(id) ON DELETE CASCADE,
   question TEXT NOT NULL,
+  simplified_title TEXT,
+  explanation TEXT,
+  deep_explanation TEXT,
+  vote_flip BOOLEAN DEFAULT false,
+  arguments_pro JSONB DEFAULT '[]',
+  arguments_contra JSONB DEFAULT '[]',
+  stakeholders JSONB DEFAULT '[]',
   model_used TEXT NOT NULL,
   generated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

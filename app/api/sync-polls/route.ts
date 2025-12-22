@@ -56,6 +56,8 @@ export async function GET(request: Request) {
                 .eq('id', poll.id)
                 .single();
 
+            const relatedLinks = poll.field_related_links || [];
+
             if (!existing) {
                 // 3. Neuen Poll speichern
                 const { error: insertError } = await supabase.from('polls').insert({
@@ -66,7 +68,8 @@ export async function GET(request: Request) {
                     accepted: poll.field_accepted,
                     legislature_id: poll.field_legislature.id,
                     abgeordnetenwatch_url: poll.abgeordnetenwatch_url,
-                    topics: topicLabels
+                    topics: topicLabels,
+                    related_links: relatedLinks
                 });
 
                 if (insertError) {
@@ -83,7 +86,10 @@ export async function GET(request: Request) {
                 newPolls++;
             } else {
                 // Bei existierenden Polls: Votes updaten UND Topics syncen
-                await supabase.from('polls').update({ topics: topicLabels }).eq('id', poll.id);
+                await supabase.from('polls').update({
+                    topics: topicLabels,
+                    related_links: relatedLinks
+                }).eq('id', poll.id);
                 await syncVotesForPoll(poll.id);
 
                 // CHECK: Existiert bereits eine Frage? Wenn ja, NICHT neu generieren!
@@ -207,7 +213,7 @@ async function syncVotesForPoll(pollId: number) {
 // AI FRAGE GENERIEREN
 // ============================================
 async function generateQuestionForPoll(pollId: number, poll: any) {
-    // 1. Check ob bereits vollständig generiert (inkl. Titel und Erklärung)
+    // 1. Check ob bereits vollständig generiert
     const { data: existing } = await supabase
         .from('poll_questions')
         .select('question, simplified_title, explanation')
@@ -219,72 +225,55 @@ async function generateQuestionForPoll(pollId: number, poll: any) {
         return existing;
     }
 
-    // 2. HTML-Tags aus Beschreibung entfernen
+    // 2. HTML-Tags aus Beschreibung entfernen (Absätze erhalten)
     const rawDescription = poll.description || poll.field_intro || '';
     const cleanDescription = rawDescription
-        .replace(/<[^>]*>/g, ' ')
-        .replace(/\s+/g, ' ')
+        .replace(/<\/p>/g, '\n\n') // Absätze trennen
+        .replace(/<br\s*\/?>/g, '\n') // Zeilenumbrüche
+        .replace(/<[^>]*>/g, ' ') // Restliche Tags weg
+        .replace(/&nbsp;/g, ' ')
+        .replace(/[ \t]+/g, ' ') // Mehrfache Leerzeichen (aber keine Newlines) konsolidieren
+        .split('\n').map((line: string) => line.trim()).join('\n') // Jede Zeile trimmen
+        .replace(/\n{3,}/g, '\n\n') // Max 2 Newlines hintereinander
         .trim()
-        .substring(0, 3000); // Mehr Kontext für bessere Erklärung
+        .substring(0, 4000); // Mehr Kontext für bessere Erklärung
 
-    // 3. System Prompt mit den 10 Regeln
+    // 3. System Prompt mit Fokus auf Relevanz und Präzision
     const systemPrompt = `
 Du bist ein politischer Redakteur für eine App, die komplexe Gesetze für normale Bürger verständlich macht.
 Deine Aufgabe: Analysiere den Gesetzesentwurf und erstelle 3 Dinge:
-3. Eine ultra-kurze Erklärung ("Was bedeutet das?").
+1. Einen vereinfachten Titel ("simplified_title").
+2. Eine neutrale Ja/Nein Frage ("question").
+3. Eine ultra-kurze Erklärung ("explanation").
 
-PRIORITÄT: Die "question" muss logisch exakt zum Originaltitel ("label") passen.
-- Wenn der Titel heißt: "Waffenlieferungen stoppen"
-- Dann MUSS die Frage heißen: "Sollen Waffenlieferungen gestoppt werden?" (Ja = Stoppen)
-- FALSCH wäre: "Sollen Waffen geliefert werden?" (Ja = Liefern -> WIDERSPRUCH zum Titel)
+WICHTIGSTE REGEL FÜR DIE FRAGE:
+- Die Frage muss das **Hauptziel** (die gesetzliche Absicht) zusammenfassen, nicht nur ein einzelnes Detail.
+- Übernimm wichtige Bedingungen aus dem Text (z.B. "rückwirkend", "für alle", "nur bei Neuverträgen").
 
-Versuche die Frage so zu formulieren, dass "Ja" im Titel auch "Ja" in der Frage bedeutet.
-Vermeide "vote_flip" wenn möglich!
-Nutze "vote_flip" NUR, wenn der Originaltitel eine doppelte Verneinung enthält oder extrem verwirrend ist (z.B. "Ablehnung des Antrags auf Keine Waffen").
+BEISPIEL 1 (Widerrufsbutton):
+- Text: "Es geht um Verbraucherschutz. Firmen müssen einen Widerrufsbutton für Online-Verträge anbieten, um Kündigungen zu erleichtern..."
+- Schlecht: "Soll der Widerrufsbutton eingeführt werden?"
+- Gut: "Sollen Kündigungen von Online-Verträgen durch einen verpflichtenden Button leichter werden?"
 
-SPECIAL LOGIC - PARLIAMENTARY RECOMMENDATIONS (Beschlussempfehlung):
-Oft lautet der Text: "Beschlussempfehlung... Ablehnung des Antrags X" oder "X nicht unterbinden".
-In diesem Fall:
-1. Ignoriere die "Ablehnung". Konzentriere dich auf den Kern-Antrag "X".
-2. Schreibe den Titel/Frage so, als ginge es um die Annahme von "X".
-3. Setze "vote_flip": true.
+BEISPIEL 2 (Agrardiesel):
+- Text: "Die Finanzierung soll rückwirkend zum 1. Januar 2024 durch die Agrardieselrückerstattung erfolgen..."
+- Schlecht: "Soll Agrardiesel wieder erstattet werden?"
+- Gut: "Soll die Erstattung für Agrardiesel rückwirkend zum Jahresbeginn 2024 wieder eingeführt werden?"
 
-BEISPIEL:
-Text: "Atomgeschäfte nicht unterbinden (Beschlussempfehlung)"
--> Analyse: Es gibt einen Antrag "Atomgeschäfte verbieten". Die Empfehlung will ihn ablehnen ("nicht unterbinden").
--> Simplified Title: "Atomgeschäfte mit Russland verbieten" (Kern-Thema).
--> Question: "Sollen Atomgeschäfte verboten werden?"
--> Vote Flip: true (Weil JA zur Empfehlung = NEIN zum Verbot).
-
-WICHTIG: Befolge strikt diese 10 Regeln für "Klare Sprache":
-1. Vermeide doppelte Verneinungen (z.B. "nicht ablehnen"). ABER: Wörter wie "Stoppen", "Verbieten", "Beenden" sind ERLAUBT und SOLLEN genutzt werden, wenn sie im Titel vorkommen! Mache aus "Stoppen" NIEMALS "Weiter erlauben".
-2. Löse Substantivierungen auf (Verben statt Wörter auf -ung, -heit, -keit).
-3. Nutze Aktiv statt Passiv (Wer handelt?).
-4. Sei konkret (Klartext statt vage Begriffe).
-5. Kurze Sätze (Max 20 Wörter, ein Gedanke pro Satz).
-6. Erkläre oder ersetze Fachwörter durch Alltagssprache.
-7. Streiche alle Füllwörter (im Hinblick auf, bezüglich, etc.).
-8. Nutze klare Zeitangaben.
-9. Nutze eindeutige Modalverben (Muss = Pflicht, Soll = Empfehlung).
-10. Mach es so einfach wie möglich (Tinder-Style, sofort verständlich).
-
-ERKLÄRUNG (explanation):
-- Erkläre, was der Antragsteller WOLLTE.
-- Wenn es eine "Ablehnung" ist: Erkläre NICHT, dass es abgelehnt wurde, sondern WAS abgelehnt wurde (Das Ziel des ursprünglichen Antrags).
-- Beispiel Falsch: "Der Ausschuss empfiehlt, den Antrag abzulehnen, da er unbegründet ist."
-- Beispiel Richtig: "Die Fraktion wollte erreichen, dass die Stimmen neu ausgezählt werden, da sie Fehler vermutete."
-
-SPECIAL LOGIC - VOTE FLIP DETECTION:
-Manche Anträge sind negativ formuliert.
-NUR wenn du die Frage inhaltlich umdrehen MUSST (um doppelte Verneinung zu vermeiden), setze "vote_flip": true.
-Sonst "vote_flip": false.
+WICHTIG: Befolge strikt diese Regeln für "Klare Sprache":
+1. Vermeide doppelte Verneinungen.
+2. Nutze Aktiv statt Passiv.
+3. Sei konkret und präzise.
+4. Kurze Sätze (Max 20 Wörter).
+5. Erkläre Fachwörter einfach.
+6. Die Frage muss logisch exakt zum Originaltitel ("label") passen (Ja = Zustimmung zur Änderung).
 
 FORMAT: Antworte NUR als valides JSON Objekt:
 {
-  "simplified_title": "Kurzer, knackiger Titel (max 10 Wörter)",
-  "question": "Neutrale Ja/Nein Frage (max 15 Wörter)",
-  "explanation": "Einfache Erklärung, worum es in dem Gesetz/Antrag geht. Maximal 280 Zeichen. WICHTIG: Erwähne NICHT das Ergebnis (abgelehnt/angenommen), sondern nur den Inhalt!",
-  "vote_flip": boolean (true wenn die vereinfachte Frage die Logik umdreht, sonst false)
+  "simplified_title": "Kurzer Titel (max 10 Wörter)",
+  "question": "Ja/Nein Frage (max 20 Wörter)",
+  "explanation": "Einfache Erklärung (Max 300 Zeichen). KEIN Ergebnis nennen!",
+  "vote_flip": boolean
 }
 `;
 
@@ -310,8 +299,6 @@ FORMAT: Antworte NUR als valides JSON Objekt:
                 }
             ],
             temperature: 0.3,
-            // Devstral usually follows instructions well without JSON mode enforced via API param,
-            // but we keep strict system prompt. Some free models don't support response_format.
         })
     });
 
@@ -323,19 +310,18 @@ FORMAT: Antworte NUR als valides JSON Objekt:
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content?.trim();
 
-    // JSON parsen (Clean up markdown code blocks if present)
+    // JSON parsen
     let result;
     try {
         const jsonBlock = content.replace(/^```json\s*|\s*```$/g, '');
         result = JSON.parse(jsonBlock);
     } catch (e) {
         console.error(`Failed to parse AI JSON for poll ${pollId}:`, content);
-        // Fallback or retry logic could go here
         return null;
     }
 
     if (result) {
-        // 5. In DB speichern (Upsert um fehlende Felder zu ergänzen)
+        // 5. In DB speichern
         await supabase.from('poll_questions').upsert({
             poll_id: pollId,
             question: result.question,
