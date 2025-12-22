@@ -56,7 +56,8 @@ export async function GET(request: Request) {
                 .eq('id', poll.id)
                 .single();
 
-            const relatedLinks = (poll.field_related_links || []).map((link: any) => {
+            // Collect all potential links
+            const rawLinks = (poll.field_related_links || []).map((link: any) => {
                 let url = link.url || link.uri || '';
                 if (url.startsWith('entity:node/')) {
                     const nodeId = url.replace('entity:node/', '');
@@ -68,21 +69,35 @@ export async function GET(request: Request) {
                 };
             });
 
-            // CHECK: Extract links from field_intro (e.g. PDFs, Drucksachen)
+            // Extract links from field_intro (e.g. PDFs, Drucksachen)
             if (poll.field_intro) {
                 const linkRegex = /<a[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
                 let match;
                 while ((match = linkRegex.exec(poll.field_intro)) !== null) {
                     const url = match[1];
-                    // Clean label: remove HTML tags inside the link text if any
                     const label = match[2].replace(/<[^>]+>/g, '').trim() || 'Dokument';
-
-                    // Only add if not already present
-                    if (!relatedLinks.some((l: any) => l.url === url)) {
-                        relatedLinks.push({ label, url });
-                    }
+                    rawLinks.push({ label, url });
                 }
             }
+
+            // FILTER: Keep only strictly relevant documents
+            // 1. Must be a PDF OR
+            // 2. Must be from official bundestag.de domain
+            // 3. Exclude Profiles and Committees
+            const filteredLinks = rawLinks.filter((l: any) => {
+                const lowerUrl = l.url.toLowerCase();
+                const isPdf = lowerUrl.endsWith('.pdf');
+                const isBundestag = lowerUrl.includes('bundestag.de');
+
+                // Exclude specific junk even if it matches above (unlikely for bundestag.de, but safe)
+                const isProfile = lowerUrl.includes('/profile/') || lowerUrl.includes('/abgeordnete/');
+                const isCommittee = lowerUrl.includes('/ausschuesse/');
+
+                return (isPdf || isBundestag) && !isProfile && !isCommittee;
+            });
+
+            // Remove duplicates
+            const uniqueLinks = Array.from(new Map(filteredLinks.map((item: any) => [item.url, item])).values());
 
             if (!existing) {
                 // 3. Neuen Poll speichern
@@ -95,7 +110,7 @@ export async function GET(request: Request) {
                     legislature_id: poll.field_legislature.id,
                     abgeordnetenwatch_url: poll.abgeordnetenwatch_url,
                     topics: topicLabels,
-                    related_links: relatedLinks
+                    related_links: uniqueLinks
                 });
 
                 if (insertError) {
@@ -114,7 +129,7 @@ export async function GET(request: Request) {
                 // Bei existierenden Polls: Votes updaten UND Topics syncen
                 await supabase.from('polls').update({
                     topics: topicLabels,
-                    related_links: relatedLinks
+                    related_links: uniqueLinks
                 }).eq('id', poll.id);
                 await syncVotesForPoll(poll.id);
 
