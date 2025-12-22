@@ -5,21 +5,21 @@ import { PollCard } from '@/components/PollCard';
 import { PollListItem } from '../components/PollListItem';
 import { PollList } from '@/components/PollList';
 import { Footer } from '@/components/Footer';
+import { FilterBar } from '@/components/FilterBar';
+import { mapTopicsToTheme } from '@/lib/topicUtils';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Client wrapper for interactivity? No, we can use Server Actions or Client Component
-// Let's keep Page as Server Component but make a client wrapper for the list?
-// Or just iterate PollCards which are now Client Components.
-
-
-
 export const revalidate = 60; // ISR: Revalidate every minute
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   // Check for placeholder credentials to avoid build errors
   if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('your-project')) {
     return (
@@ -43,11 +43,11 @@ export default async function HomePage() {
   }
 
   // Lade Polls mit generierten Fragen AND simplified titles
-  const { data: polls, error } = await supabase
+  const { data: rawPolls, error } = await supabase
     .from('polls')
     .select('id, label, description, poll_date, accepted, poll_questions!inner(*), vote_results(*), topics')
     .order('poll_date', { ascending: false })
-    .limit(50);
+    .limit(100); // Increased limit as we are filtering
 
 
 
@@ -61,7 +61,75 @@ export default async function HomePage() {
     );
   }
 
-  if (!polls || polls.length === 0) {
+  let polls = rawPolls || [];
+
+  // --- FILTER LOGIC ---
+  const filterParty = typeof searchParams.party === 'string' ? searchParams.party : '';
+  const filterVote = typeof searchParams.vote === 'string' ? searchParams.vote : '';
+  const filterTopic = typeof searchParams.topic === 'string' ? searchParams.topic : '';
+
+  if (filterParty || filterVote || filterTopic) {
+    polls = polls.filter((poll) => {
+      let matchesTopic = true;
+      let matchesPartyVote = true;
+
+      // 1. Topic Filter
+      if (filterTopic && filterTopic !== 'Alle') {
+        const theme = mapTopicsToTheme(poll.topics || []);
+        matchesTopic = theme === filterTopic;
+      }
+
+      // 2. Party & Vote Filter
+      if (filterParty) {
+        // Find the generated question to get vote_flip
+        const question = poll.poll_questions && poll.poll_questions[0];
+        const voteFlip = question?.vote_flip || false;
+
+        // Find the party's vote results
+        const partyResult = poll.vote_results.find((r: any) => {
+          const label = (r.fraction_label || '').toLowerCase();
+          const target = filterParty.toLowerCase();
+          return label.includes(target) || (target === 'cdu/csu' && label.includes('cdu'));
+        });
+
+        if (!partyResult) {
+          matchesPartyVote = false;
+        } else {
+          // Determine Party's Majority Vote
+          const yes = partyResult.votes_yes || 0;
+          const no = partyResult.votes_no || 0;
+
+          let originalVoteDirection = 'abstain';
+          if (yes > no) originalVoteDirection = 'yes';
+          else if (no > yes) originalVoteDirection = 'no';
+
+          // Calculate Effective Vote
+          let effectiveVote = originalVoteDirection;
+          if (voteFlip) {
+            if (originalVoteDirection === 'yes') effectiveVote = 'no';
+            else if (originalVoteDirection === 'no') effectiveVote = 'yes';
+          }
+
+          // Compare vote if filterVote is set
+          if (filterVote) {
+            matchesPartyVote = effectiveVote === filterVote;
+          } else {
+            // If only party is selected, we show all polls where party voted (which is checked by partyResult existence)
+            matchesPartyVote = true;
+          }
+        }
+      } else if (filterVote) {
+        // Vote selected but no Party? Implementation choice: Ignore or require Party.
+        // Current UI requires Party to enable Vote dropdown.
+        // But if manually set in URL? Let's ignore Vote filter if no Party is set.
+        matchesPartyVote = true;
+      }
+
+      return matchesTopic && matchesPartyVote;
+    });
+  }
+
+  if (polls.length === 0 && (!rawPolls || rawPolls.length === 0)) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto p-6">
@@ -101,6 +169,8 @@ export default async function HomePage() {
             Wie hättest du im Bundestag entschieden?
           </p>
         </div>
+
+        <FilterBar />
 
         {/* Polls Stack */}
         <div className="space-y-8">
