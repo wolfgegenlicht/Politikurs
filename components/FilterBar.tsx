@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, ChevronDown } from 'lucide-react';
 import { THEMES } from '@/lib/topicUtils';
 
 const PARTIES = [
@@ -115,17 +115,20 @@ export function FilterBar() {
                             <label htmlFor="party-select" className="block text-xs font-bold uppercase text-slate-400 mb-2">
                                 Partei
                             </label>
-                            <select
-                                id="party-select"
-                                value={selectedParty}
-                                onChange={(e) => handleChange('party', e.target.value)}
-                                className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
-                            >
-                                <option value="">Alle Parteien</option>
-                                {PARTIES.map(p => (
-                                    <option key={p} value={p}>{p}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    id="party-select"
+                                    value={selectedParty}
+                                    onChange={(e) => handleChange('party', e.target.value)}
+                                    className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-10 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer appearance-none"
+                                >
+                                    <option value="">Alle Parteien</option>
+                                    {PARTIES.map(p => (
+                                        <option key={p} value={p}>{p}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+                            </div>
                         </div>
 
                         {/* Vote Direction Select */}
@@ -133,16 +136,19 @@ export function FilterBar() {
                             <label htmlFor="vote-select" className="block text-xs font-bold uppercase text-slate-400 mb-2">
                                 Abstimmung
                             </label>
-                            <select
-                                id="vote-select"
-                                value={selectedVote}
-                                onChange={(e) => handleChange('vote', e.target.value)}
-                                className={`w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer ${!selectedParty && selectedVote ? 'border-amber-300 bg-amber-50' : ''}`}
-                            >
-                                <option value="">Alle Abstimmungen</option>
-                                <option value="yes">Hat "Dafür" gestimmt</option>
-                                <option value="no">Hat "Dagegen" gestimmt</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    id="vote-select"
+                                    value={selectedVote}
+                                    onChange={(e) => handleChange('vote', e.target.value)}
+                                    className={`w-full h-12 rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-10 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer appearance-none ${!selectedParty && selectedVote ? 'border-amber-300 bg-amber-50' : ''}`}
+                                >
+                                    <option value="">Alle Abstimmungen</option>
+                                    <option value="yes">Hat "Dafür" gestimmt</option>
+                                    <option value="no">Hat "Dagegen" gestimmt</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+                            </div>
                         </div>
                     </div>
 
