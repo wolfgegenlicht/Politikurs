@@ -71,7 +71,7 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
                         {footer || (
                             <button
                                 onClick={onClose}
-                                className="w-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold py-5 rounded-[24px] hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.98] shadow-xl flex flex-col items-center justify-center group"
+                                className="w-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold py-5 rounded-[24px] hover:bg-slate-800 dark:hover:bg-slate-100 transition-all active:scale-[0.98] flex flex-col items-center justify-center group"
                             >
                                 <span className="text-lg">Schließen</span>
                                 <span className="text-[10px] opacity-50 font-bold uppercase tracking-[0.2em] mt-1 group-hover:opacity-100 transition-opacity">Zurück zur Übersicht</span>

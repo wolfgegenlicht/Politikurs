@@ -203,7 +203,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     <div className="flex flex-col gap-3 w-full">
                         <button
                             onClick={() => setExplanationMode(0)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-indigo-200"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98]"
                         >
                             Verstanden 👍
                         </button>
@@ -259,7 +259,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     <div className="flex flex-col gap-3 w-full">
                         <button
                             onClick={() => setExplanationMode(0)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-indigo-200"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98]"
                         >
                             Alles klar, verstanden!
                         </button>
@@ -295,7 +295,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     <button
                         onClick={(e) => { e.preventDefault(); handleVote('no'); }}
                         className={`
-                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95  hover:shadow-md
+                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95
                             ${userVote === 'no'
                                 ? 'bg-red-500 text-white border-red-600 ring-2 ring-red-200'
                                 : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500'}
@@ -307,7 +307,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     <button
                         onClick={(e) => { e.preventDefault(); handleVote('yes'); }}
                         className={`
-                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95  hover:shadow-md
+                            group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95
                             ${userVote === 'yes'
                                 ? 'bg-green-500 text-white border-green-600 ring-2 ring-green-200'
                                 : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500'}
