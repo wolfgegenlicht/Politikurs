@@ -67,7 +67,7 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
 
                 {/* Footer Buttons */}
                 <div className="p-6 sm:p-10 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
-                    <div className="max-w-prose mx-auto w-full">
+                    <div className="max-w-prose mx-auto w-full flex flex-col gap-4">
                         {footer || (
                             <button
                                 onClick={onClose}
@@ -75,6 +75,16 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
                             >
                                 <span className="text-lg">Schließen</span>
                                 <span className="text-[10px] opacity-50 font-bold uppercase tracking-[0.2em] mt-1 group-hover:opacity-100 transition-opacity">Zurück zur Übersicht</span>
+                            </button>
+                        )}
+
+                        {/* Always show a subtle close option at the bottom if a custom footer is used */}
+                        {footer && (
+                            <button
+                                onClick={onClose}
+                                className="w-full py-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            >
+                                <span>Schließen</span>
                             </button>
                         )}
                     </div>
