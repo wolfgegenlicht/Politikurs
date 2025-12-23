@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { calculatePartyMatches, PartyMatchResult } from '@/lib/matchUtils';
-import { getPartyColor } from '@/lib/partyUtils';
+import { getPartyColor, splitPartyLabel } from '@/lib/partyUtils';
 import { Target, Info, ChevronRight, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
@@ -112,9 +112,16 @@ export default function MatchesPage() {
                                             className="w-[14px] h-[14px] rounded-full shrink-0"
                                             style={{ backgroundColor: getPartyColor(match.fraction_label) }}
                                         />
-                                        <span className="font-black text-slate-900 tracking-tight">
-                                            {match.fraction_label}
-                                        </span>
+                                        <div className="flex flex-col">
+                                            <span className="font-black text-slate-900 tracking-tight leading-tight">
+                                                {splitPartyLabel(match.fraction_label).name}
+                                            </span>
+                                            {splitPartyLabel(match.fraction_label).period && (
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                                    {splitPartyLabel(match.fraction_label).period}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-2xl font-black text-indigo-600">

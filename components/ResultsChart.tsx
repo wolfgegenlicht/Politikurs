@@ -2,7 +2,7 @@
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { getPartyColor } from '@/lib/partyUtils';
+import { getPartyColor, splitPartyLabel } from '@/lib/partyUtils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -114,7 +114,7 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
 
                         if (!breakdown || breakdown.length === 0) return ['Keine Stimmen'];
 
-                        return breakdown.map(item => ` ${item.party}: ${item.count}`); // Simple list
+                        return breakdown.map(item => ` ${splitPartyLabel(item.party).name}: ${item.count}`); // Simple list
                     }
                 }
             }
@@ -222,11 +222,16 @@ export function ResultsChart({ results, userStats, voteFlip = false }: ResultsCh
                                             className="w-[16px] h-[16px] rounded-full shrink-0"
                                             style={{ backgroundColor: getPartyColor(result.fraction_label) }}
                                         />
-                                        <div>
-                                            <span className="font-bold text-slate-800 text-base block">
-                                                {result.fraction_label}
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-800 text-base block leading-tight">
+                                                {splitPartyLabel(result.fraction_label).name}
                                             </span>
-                                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                                            {splitPartyLabel(result.fraction_label).period && (
+                                                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mt-0.5">
+                                                    {splitPartyLabel(result.fraction_label).period}
+                                                </span>
+                                            )}
+                                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">
                                                 {total} Sitze
                                             </span>
                                         </div>

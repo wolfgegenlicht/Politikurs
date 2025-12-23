@@ -18,3 +18,14 @@ export function getPartyColor(label: string): string {
     }
     return '#94a3b8'; // Slate-400
 }
+
+export function splitPartyLabel(label: string): { name: string; period?: string } {
+    const match = label.match(/^(.*?)\s*\((.*?)\)$/);
+    if (match) {
+        return {
+            name: match[1].trim(),
+            period: `(${match[2]})`
+        };
+    }
+    return { name: label };
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getPartyColor } from '@/lib/partyUtils';
+import { getPartyColor, splitPartyLabel } from '@/lib/partyUtils';
 import { Check, X, ThumbsUp, ThumbsDown, UserCheck } from 'lucide-react';
 
 interface VoteResult {
@@ -120,9 +120,16 @@ export function VoteMatchAnalysis({ pollId, results, voteFlip = false, userVote:
                                         className="w-[14px] h-[14px] rounded-full shrink-0"
                                         style={{ backgroundColor: getPartyColor(party.fraction_label) }}
                                     />
-                                    <span className="font-bold text-slate-700 text-sm">
-                                        {party.fraction_label}
-                                    </span>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-slate-700 text-sm leading-tight">
+                                            {splitPartyLabel(party.fraction_label).name}
+                                        </span>
+                                        {splitPartyLabel(party.fraction_label).period && (
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                                {splitPartyLabel(party.fraction_label).period}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>
