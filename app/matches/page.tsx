@@ -106,7 +106,7 @@ export default function MatchesPage() {
                                 key={match.fraction_id}
                                 className="group relative bg-slate-50 rounded-2xl p-5 border border-slate-100 transition-all hover:border-indigo-200 hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5"
                             >
-                                <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center justify-between mb-3 gap-2">
                                     <div className="flex items-center gap-3">
                                         <div
                                             className="w-[14px] h-[14px] rounded-full shrink-0"
@@ -117,7 +117,7 @@ export default function MatchesPage() {
                                         </span>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-2xl font-black text-indigo-600 italic">
+                                        <span className="text-2xl font-black text-indigo-600">
                                             {match.percentage}%
                                         </span>
                                     </div>
