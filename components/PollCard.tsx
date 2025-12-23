@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink } from 'lucide-react';
+import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink, GraduationCap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { Modal } from './Modal';
 
 // Update Interface
 interface PollCardProps {
@@ -186,108 +187,105 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                 </div>
             </div>
 
-            {/* --- EXPLANATION OVERLAYS --- */}
+            {/* --- EXPLANATION MODALS --- */}
 
-            {/* Overlay Level 1: Standard Explanation */}
-            {explanationMode === 1 && explanation && (
-                <div className="absolute inset-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-8 flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="flex items-center gap-2 text-indigo-600 font-bold">
-                            <Info size={20} />
-                            <span className="text-sm uppercase tracking-wider">Erklärung</span>
-                        </div>
-                        <button onClick={(e) => { e.preventDefault(); setExplanationMode(0); }} className="text-slate-400 hover:text-slate-900">
-                            <X size={24} />
-                        </button>
+            {/* Modal Level 1: Standard Explanation */}
+            <Modal
+                isOpen={explanationMode === 1}
+                onClose={() => setExplanationMode(0)}
+                title={
+                    <div className="flex items-center gap-2 text-indigo-600">
+                        <Info size={20} strokeWidth={3} />
+                        <span className="text-sm uppercase tracking-wider font-black">Erklärung</span>
                     </div>
-
-                    <div className="flex-1 overflow-y-auto">
-                        <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed font-medium mb-8">
-                            {explanation}
-                        </p>
-
-                        {related_links && related_links.length > 0 && (
-                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Offizielle Quellen</h4>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {related_links.map((link, i) => (
-                                        <a
-                                            key={i}
-                                            href={link.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group text-xs font-bold text-slate-600 dark:text-slate-400"
-                                        >
-                                            <span className="truncate pr-4">{link.label}</span>
-                                            <ExternalLink size={14} className="text-slate-400 shrink-0" />
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex flex-col gap-3 mt-auto">
+                }
+                footer={
+                    <div className="flex flex-col gap-3 w-full">
                         <button
-                            onClick={(e) => { e.preventDefault(); setExplanationMode(0); }}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-colors"
+                            onClick={() => setExplanationMode(0)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-indigo-200"
                         >
                             Verstanden 👍
                         </button>
                         <button
-                            onClick={(e) => { e.preventDefault(); loadDeepExplanation(); }}
-                            className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold py-3 rounded-2xl transition-colors text-sm"
+                            onClick={() => loadDeepExplanation()}
+                            className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold py-3 rounded-2xl transition-colors text-sm hover:bg-slate-200 dark:hover:bg-slate-700"
                         >
                             Verstehe ich leider nicht... 😕
                         </button>
                     </div>
-                </div>
-            )}
+                }
+            >
+                <div className="space-y-8">
+                    <p className="text-xl md:text-2xl text-slate-800 dark:text-slate-200 leading-relaxed font-semibold">
+                        {explanation}
+                    </p>
 
-            {/* Overlay Level 2: Deep Explanation (ELI15) */}
-            {explanationMode === 2 && (
-                <div className="absolute inset-0 z-30 bg-indigo-50/98 dark:bg-slate-900/98 backdrop-blur-xl p-8 flex flex-col animate-in fade-in slide-in-from-bottom-10 duration-300">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="flex items-center gap-2 text-indigo-600 font-bold">
-                            <span className="text-2xl">🎓</span>
-                            <span className="text-sm uppercase tracking-wider">Deep Dive</span>
+                    {related_links && related_links.length > 0 && (
+                        <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Offizielle Quellen</h4>
+                            <div className="grid grid-cols-1 gap-3">
+                                {related_links.map((link, i) => (
+                                    <a
+                                        key={i}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group text-sm font-bold text-slate-700 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                                    >
+                                        <span className="truncate pr-4">{link.label}</span>
+                                        <ExternalLink size={16} className="text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0" />
+                                    </a>
+                                ))}
+                            </div>
                         </div>
-                        <button onClick={(e) => { e.preventDefault(); setExplanationMode(0); }} className="text-slate-400 hover:text-slate-900">
-                            <X size={24} />
-                        </button>
-                    </div>
+                    )}
+                </div>
+            </Modal>
 
-                    <div className="flex-1 overflow-y-auto">
-                        {loadingDeep ? (
-                            <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-4">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                <p className="text-sm font-medium animate-pulse">Ich suche eine einfache Erklärung...</p>
-                            </div>
-                        ) : (
-                            <div className="prose prose-lg prose-indigo dark:prose-invert">
-                                <ReactMarkdown>
-                                    {deepExplanation}
-                                </ReactMarkdown>
-                            </div>
-                        )}
+            {/* Modal Level 2: Deep Explanation (ELI15) */}
+            <Modal
+                isOpen={explanationMode === 2}
+                onClose={() => setExplanationMode(0)}
+                title={
+                    <div className="flex items-center gap-2 text-indigo-600">
+                        <GraduationCap size={22} strokeWidth={2.5} />
+                        <span className="text-sm uppercase tracking-wider font-black">Deep Dive</span>
                     </div>
-
-                    <div className="flex flex-col gap-3 mt-8">
+                }
+                footer={
+                    <div className="flex flex-col gap-3 w-full">
                         <button
-                            onClick={(e) => { e.preventDefault(); setExplanationMode(0); }}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-colors shadow-lg shadow-indigo-200"
+                            onClick={() => setExplanationMode(0)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-indigo-200"
                         >
                             Alles klar, verstanden!
                         </button>
                         <button
-                            onClick={(e) => { e.preventDefault(); handleVote('skip'); }}
-                            className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold py-3 rounded-2xl transition-colors text-sm"
+                            onClick={() => handleVote('skip')}
+                            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 font-bold py-3 rounded-2xl transition-colors text-sm"
                         >
                             Ist mir zu kompliziert (Überspringen)
                         </button>
                     </div>
-                </div>
-            )}
+                }
+            >
+                {loadingDeep ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-6">
+                        <div className="relative">
+                            <div className="absolute inset-0 rounded-full bg-indigo-100 dark:bg-indigo-900/30 animate-ping opacity-25"></div>
+                            <div className="relative animate-spin rounded-full h-12 w-12 border-4 border-slate-100 border-b-indigo-600"></div>
+                        </div>
+                        <p className="text-sm font-bold uppercase tracking-widest animate-pulse">Ich suche eine einfache Erklärung...</p>
+                    </div>
+                ) : (
+                    <div className="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none">
+                        <ReactMarkdown>
+                            {deepExplanation || ''}
+                        </ReactMarkdown>
+                    </div>
+                )}
+            </Modal>
 
             {/* Action Buttons (Homepage only) */}
             {onVote && (
