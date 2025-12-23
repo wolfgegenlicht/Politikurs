@@ -217,9 +217,11 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                 }
             >
                 <div className="space-y-8">
-                    <p className="text-xl md:text-2xl text-slate-800 dark:text-slate-200 leading-relaxed font-semibold">
-                        {explanation}
-                    </p>
+                    <div className="prose prose-lg md:prose-xl prose-slate dark:prose-invert max-w-none font-semibold leading-relaxed">
+                        <ReactMarkdown>
+                            {explanation}
+                        </ReactMarkdown>
+                    </div>
 
                     {related_links && related_links.length > 0 && (
                         <div className="pt-8 border-t border-slate-100 dark:border-slate-800">

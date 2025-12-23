@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { VotingInterface } from './VotingInterface';
 import { VoteMatchAnalysis } from './VoteMatchAnalysis';
 import { ResultsChart } from './ResultsChart';
+import ReactMarkdown from 'react-markdown';
 
 interface PollInteractionProps {
     pollId: number;
@@ -43,9 +44,11 @@ export function PollInteraction({ pollId, initialVote, explanation, results, vot
                     <h3 className="text-sm font-bold text-indigo-900 mb-4 flex items-center uppercase tracking-widest">
                         💡 Kurz erklärt
                     </h3>
-                    <p className="text-lg text-slate-700 leading-relaxed font-medium">
-                        {explanation}
-                    </p>
+                    <div className="text-lg text-slate-700 leading-relaxed font-medium prose prose-indigo max-w-none">
+                        <ReactMarkdown>
+                            {explanation}
+                        </ReactMarkdown>
+                    </div>
                 </div>
             )}
 
