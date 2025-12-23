@@ -78,6 +78,38 @@ export default function DatenschutzPage() {
                         </section>
 
                         <section className="mb-8">
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">Vercel Web Analytics</h3>
+                            <p className="mb-4">
+                                Wir nutzen auf dieser Website das Analysetool „Vercel Web Analytics“ des Anbieters <strong>Vercel Inc.</strong>, 340 S Lemon Ave #4133 Walnut, CA 91789, USA.
+                            </p>
+                            <p className="mb-4">
+                                Vercel Web Analytics ist ein datenschutzfreundliches Analysetool, das ohne den Einsatz von Third-Party-Cookies auskommt.
+                                Anstelle von Cookies wird ein Hash-Wert aus der eingehenden Anfrage erstellt, um Besucher zu identifizieren.
+                                Diese Identifizierung wird nicht dauerhaft gespeichert, sondern nach spätestens 24 Stunden automatisch verworfen.
+                            </p>
+                            <p className="mb-4">
+                                Es werden keine personenbezogenen Identifikatoren gesammelt, die eine Verfolgung oder einen Abgleich Ihrer Daten über verschiedene Anwendungen oder Websites hinweg ermöglichen würden.
+                                Die Erfassung von Datenpunkten (z. B. Seitenaufrufe) erfolgt anonymisiert.
+                                Es werden keine Informationen gespeichert, die eine persönliche Identifizierung eines Endnutzers oder die Rekonstruktion einer Browsersitzung über verschiedene Anwendungen hinweg ermöglichen würden.
+                            </p>
+                            <p className="mb-4">
+                                Folgende Informationen können bei jedem Datenpunkt gespeichert werden:
+                            </p>
+                            <ul className="list-disc pl-5 space-y-2 mb-4">
+                                <li>Zeitstempel des Ereignisses</li>
+                                <li>URL und dynamischer Pfad</li>
+                                <li>Referrer (vorherige Website)</li>
+                                <li>Gefilterte Query-Parameter</li>
+                                <li>Geolokalisierung (Land, Region, Stadt - basierend auf der IP, die jedoch nicht gespeichert wird)</li>
+                                <li>Betriebssystem und Browserversion</li>
+                                <li>Gerätetyp (z. B. Mobile, Desktop, Tablet)</li>
+                            </ul>
+                            <p className="mb-4">
+                                Die Nutzung von Vercel Web Analytics erfolgt auf Grundlage unserer berechtigten Interessen an der statistischen Analyse des Nutzerverhaltens zur Optimierung unseres Webangebots gemäß Art. 6 Abs. 1 lit. f DSGVO.
+                            </p>
+                        </section>
+
+                        <section className="mb-8">
                             <h3 className="text-xl font-bold text-slate-900 mb-4">Information über die Erhebung personenbezogener Daten</h3>
                             <p className="mb-4">(1) Im Folgenden informieren wir über die Erhebung personenbezogener Daten bei Nutzung unserer Website. Personenbezogene Daten sind z. B. Name, Adresse, E-Mail-Adressen, Nutzerverhalten.</p>
                             <p className="mb-4">(2) Bei einer Kontaktaufnahme mit uns per E-Mail oder über ein Kontaktformular werden die von Ihnen mitgeteilten Daten (Ihre E-Mail-Adresse, ggf. Ihr Name und Ihre Telefonnummer) von uns gespeichert, um Ihre Fragen zu beantworten. Die in diesem Zusammenhang anfallenden Daten löschen wir, nachdem die Speicherung nicht mehr erforderlich ist, oder die Verarbeitung wird eingeschränkt, falls gesetzliche Aufbewahrungspflichten bestehen.</p>
