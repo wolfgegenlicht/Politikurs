@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ explanation: existingQA.deep_explanation, cached: true });
         }
 
-        // 2. Fetch full poll text for context
+        // 2. Fetch full poll text for context AND analysis
         const { data: poll, error } = await supabase
             .from('polls')
             .select('description, label')
@@ -38,7 +38,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Poll not found' }, { status: 404 });
         }
 
-        const contextText = poll.description || poll.label;
+        // Fetch Analysis (Debate)
+        const { data: analysis } = await supabase
+            .from('poll_analysis')
+            .select('*')
+            .eq('poll_id', pollId)
+            .single();
+
+        let contextText = `OFFIZIELLE BESCHREIBUNG:\n"${poll.description || poll.label}"`;
+
+        if (analysis) {
+            contextText += `\n\nZUSATZ-INFORMATIONEN (ARGUMENTE):\n`;
+            if (analysis.description) contextText += `Zusammenfassung: ${analysis.description}\n`;
+            if (analysis.pro_arguments) contextText += `DAFÜR SPRECHEN: ${JSON.stringify(analysis.pro_arguments)}\n`;
+            if (analysis.contra_arguments) contextText += `DAGEGEN SPRECHEN: ${JSON.stringify(analysis.contra_arguments)}\n`;
+        }
 
         // 3. Call OpenRouter AI
         const systemPrompt = `
@@ -62,28 +76,22 @@ Halte dich STRENG an diese Regeln:
   Beispiel: "Der Kanzler sagt... Der Kanzler möchte..." statt "Er möchte...".
 - Benutze Zahlen als Ziffern (z.B. 5 statt fünf).
 
-3. INHALT:
-- Benutze NUR Informationen aus dem Text. Erfinde NICHTS dazu.
-- Ignoriere Sätze im Quelltext, die über das Wahlergebnis informieren.
-- Ignoriere Sätze darüber, ob ein Antrag angenommen oder abgelehnt wurde.
-- Erkläre NUR den Vorschlag (das Thema).
-- Erkläre:
-  - Wer hat den Vorschlag gemacht? (Nur wenn es im Text steht)
-  - Was soll genau gemacht werden?
-  - Warum ist das wichtig für die Menschen?
-- Erwähne NIEMALS das Ergebnis der Abstimmung.
-- Erwähne NIEMALS Partei- oder Gruppen-Namen (z.B. CDU, SPD, AfD, Grüne, FDP, Linke).
-- Erwähne NIEMALS welche Partei oder Gruppe dafür oder dagegen ist.
-- Schreibe NICHT: Der Bundes-Tag hat entschieden.
-- Schreibe NICHT: Der Antrag wurde abgelehnt.
-- Schreibe NICHT: Der Antrag wurde angenommen.
-- Schreibe stattdessen: Der Bundestag möchte entscheiden. Oder: In dem Vorschlag steht...
+3. INHALT (NEU):
+- Erkläre zuerst kurz: Was ist der Vorschlag? (Worum geht es?)
+- Erkläre dann: Warum gibt es Streit? (Wer ist dafür/dagegen und warum?)
+- Nutze dafür die "ZUSATZ-INFORMATIONEN" (Pro/Contra Argumente).
+- Bleibe dabei ABSOLUT NEUTRAL.
+- Schreibe NICHT "Pro Argumente sind...". Schreibe eher: "Manche Menschen sagen..." oder "Die Regierung sagt...". Und: "Andere Menschen finden..." oder "Die Gegner sagen...".
 
-4. FORMAT:
+4. TABUS:
+- Erwähne NIEMALS das Ergebnis der Abstimmung.
+- Erwähne NIEMALS Partei-Namen (z.B. CDU, SPD, AfD).
+- Schreibe NICHT: "Der Antrag wurde abgelehnt/angenommen".
+
+5. FORMAT:
 - Benutze KEINE Aufzählungszeichen (Bullets) oder Listen.
 - Benutze Fettdruck (**) nur für das Wort "nicht" oder "kein".
-- Gib nur den reinen Text zurück. Keine Einleitung, kein "Hier ist die Erklärung".
-- SCHREIBE KEINEN HINWEIS ZUR FINALEN ABSTIMMUNG BZW. ABSTIMMUNGSERGEBNISSEN AM ENDE.
+- Gib nur den reinen Text zurück. Keine Einleitung.
 `;
 
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
