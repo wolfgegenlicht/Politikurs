@@ -23,9 +23,10 @@ interface PollCardProps {
     accepted: boolean;
     onVote?: (vote: 'yes' | 'no' | 'skip') => void;
     onDetailsClick?: () => void; // NEW: Explicit navigation handler
+    voteFlip?: boolean;
 }
 
-export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote, onDetailsClick }: PollCardProps) {
+export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote, onDetailsClick, voteFlip = false }: PollCardProps) {
     // ... rest of state ...
 
     // ... (keep handleVote logic as is, it updates local state) ...
@@ -296,7 +297,8 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                                             <div className="w-2 h-2 rounded-full bg-green-500" />
                                             <h5 className="text-xs font-black uppercase tracking-wider text-green-600 dark:text-green-400">Dafür</h5>
                                         </div>
-                                        {pollAnalysis.pro_arguments && pollAnalysis.pro_arguments.map((arg: string, i: number) => (
+                                        {/* If voteFlip, show CONTRA args here. Else PRO. */}
+                                        {(voteFlip ? pollAnalysis.contra_arguments : pollAnalysis.pro_arguments)?.map((arg: string, i: number) => (
                                             <div key={i} className="text-sm text-slate-700 dark:text-slate-200 bg-green-50/50 dark:bg-green-900/10 p-3 rounded-xl border border-green-100 dark:border-green-900/20">
                                                 {arg}
                                             </div>
@@ -309,7 +311,8 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                                             <div className="w-2 h-2 rounded-full bg-red-500" />
                                             <h5 className="text-xs font-black uppercase tracking-wider text-red-600 dark:text-red-400">Dagegen</h5>
                                         </div>
-                                        {pollAnalysis.contra_arguments && pollAnalysis.contra_arguments.map((arg: string, i: number) => (
+                                        {/* If voteFlip, show PRO args here. Else CONTRA. */}
+                                        {(voteFlip ? pollAnalysis.pro_arguments : pollAnalysis.contra_arguments)?.map((arg: string, i: number) => (
                                             <div key={i} className="text-sm text-slate-700 dark:text-slate-200 bg-red-50/50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-900/20">
                                                 {arg}
                                             </div>
