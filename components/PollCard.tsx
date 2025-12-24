@@ -155,7 +155,7 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     {question}
                 </h2>
 
-                {/* Explanation Trigger (Below Title) */}
+                {/* Explanation Trigger (Below Title) Infos und Argumente */}
                 {explanation && (
                     <div className="mb-6 flex justify-start">
                         <button
