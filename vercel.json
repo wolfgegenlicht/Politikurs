@@ -3,6 +3,10 @@
         {
             "path": "/api/sync-polls?limit=50",
             "schedule": "0 4 * * *"
+        },
+        {
+            "path": "/api/cron/sync-stances",
+            "schedule": "*/10 * * * *"
         }
     ]
 }

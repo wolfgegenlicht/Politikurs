@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink, GraduationCap } from 'lucide-react';
+import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, ChevronDown, ExternalLink, GraduationCap, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Modal } from './Modal';
+import { createClient } from '@supabase/supabase-js';
+import { getPartyColor } from '@/lib/partyUtils';
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Update Interface
 interface PollCardProps {
@@ -28,6 +35,9 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
     const [explanationMode, setExplanationMode] = useState<0 | 1 | 2>(0);
     const [deepExplanation, setDeepExplanation] = useState<string | null>(null);
     const [loadingDeep, setLoadingDeep] = useState(false);
+
+    const [partyStances, setPartyStances] = useState<any[]>([]);
+    const [loadingStances, setLoadingStances] = useState(false);
 
     const [userVote, setUserVote] = useState<'yes' | 'no' | 'skip' | null>(null);
     const [isDetailsMode, setIsDetailsMode] = useState(false);
@@ -96,6 +106,26 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
         }
     };
 
+    const loadPartyStances = async () => {
+        if (partyStances.length > 0) return;
+        setLoadingStances(true);
+        try {
+            const { data } = await supabase
+                .from('party_stances')
+                .select('*')
+                .eq('poll_id', id);
+
+            if (data) {
+                // Sort by party name logic if needed, or rely on insert order/DB
+                setPartyStances(data);
+            }
+        } catch (e) {
+            console.error('Error loading stances:', e);
+        } finally {
+            setLoadingStances(false);
+        }
+    };
+
     // Styling for skipped state
     const cardStatusClass = userVote === 'skip'
         ? "opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0 transition-all duration-300" // "Inactive" look but interactive
@@ -133,11 +163,12 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             onClick={(e) => {
                                 e.preventDefault();
                                 setExplanationMode(1);
+                                loadPartyStances();
                             }}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 border-amber-200 border-[1px] bg-amber-50 hover:bg-amber-100 rounded-full transition-colors uppercase tracking-wider"
                         >
                             <Info size={14} strokeWidth={3} />
-                            Was bedeutet das?
+                            Infos & Positionen
                         </button>
                     </div>
                 )}
@@ -242,8 +273,49 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             </div>
                         </div>
                     )}
+
+                    {/* Party Stances Section */}
+                    <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Was sagen die Parteien?</h4>
+
+                        {loadingStances ? (
+                            <div className="flex items-center justify-center py-8 text-slate-400">
+                                <span className="text-xs font-bold uppercase tracking-wider animate-pulse">Lade Positionen...</span>
+                            </div>
+                        ) : partyStances.length > 0 ? (
+                            <div className="grid grid-cols-1 gap-4">
+                                {partyStances.map((stance) => (
+                                    <div key={stance.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div
+                                                className="w-3 h-3 rounded-full shrink-0"
+                                                style={{ backgroundColor: getPartyColor(stance.party_name) }}
+                                            />
+                                            <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{stance.party_name}</span>
+                                        </div>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-3">
+                                            {stance.stance}
+                                        </p>
+                                        {stance.source_url && (
+                                            <a
+                                                href={stance.source_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest"
+                                            >
+                                                <FileText size={10} />
+                                                Quelle
+                                            </a>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-slate-400 italic">Zu dieser Abstimmung liegen noch keine detaillierten Parteipositionen vor.</p>
+                        )}
+                    </div>
                 </div>
-            </Modal>
+            </Modal >
 
             {/* Modal Level 2: Deep Explanation (ELI15) */}
             <Modal
@@ -287,56 +359,62 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                         </ReactMarkdown>
                     </div>
                 )}
-            </Modal>
+            </Modal >
 
             {/* Action Buttons (Homepage only) */}
-            {onVote && (
-                <div className="p-4 grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 transition-opacity duration-300">
-                    <button
-                        onClick={(e) => { e.preventDefault(); handleVote('no'); }}
-                        className={`
+            {
+                onVote && (
+                    <div className="p-4 grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 transition-opacity duration-300">
+                        <button
+                            onClick={(e) => { e.preventDefault(); handleVote('no'); }}
+                            className={`
                             group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95
                             ${userVote === 'no'
-                                ? 'bg-red-500 text-white border-red-600 ring-2 ring-red-200'
-                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500'}
+                                    ? 'bg-red-500 text-white border-red-600 ring-2 ring-red-200'
+                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/10 text-slate-400 hover:text-red-500'}
                         `}
-                    >
-                        <X size={28} className={`mb-1 transition-transform ${userVote === 'no' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
-                        <span className="font-bold uppercase tracking-wider text-[10px]">Dagegen</span>
-                    </button>
-                    <button
-                        onClick={(e) => { e.preventDefault(); handleVote('yes'); }}
-                        className={`
+                        >
+                            <X size={28} className={`mb-1 transition-transform ${userVote === 'no' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
+                            <span className="font-bold uppercase tracking-wider text-[10px]">Dagegen</span>
+                        </button>
+                        <button
+                            onClick={(e) => { e.preventDefault(); handleVote('yes'); }}
+                            className={`
                             group flex flex-col items-center justify-center border rounded-2xl py-4 transition-all active:scale-95
                             ${userVote === 'yes'
-                                ? 'bg-green-500 text-white border-green-600 ring-2 ring-green-200'
-                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500'}
+                                    ? 'bg-green-500 text-white border-green-600 ring-2 ring-green-200'
+                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 hover:border-green-200 hover:bg-green-50 dark:hover:bg-green-900/10 text-slate-400 hover:text-green-500'}
                         `}
-                    >
-                        <Check size={28} className={`mb-1 transition-transform ${userVote === 'yes' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
-                        <span className="font-bold uppercase tracking-wider text-[10px]">Dafür</span>
-                    </button>
-                </div>
-            )}
+                        >
+                            <Check size={28} className={`mb-1 transition-transform ${userVote === 'yes' ? 'scale-110' : 'group-hover:scale-110'}`} strokeWidth={3} />
+                            <span className="font-bold uppercase tracking-wider text-[10px]">Dafür</span>
+                        </button>
+                    </div>
+                )
+            }
 
             {/* Details Link if voted */}
-            {isDetailsMode && (
-                <div className="p-4 pt-0">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (onDetailsClick) onDetailsClick();
-                        }}
-                        className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
-                    >
-                        Details anzeigen
-                    </button>
-                </div>
-            )}
+            {
+                isDetailsMode && (
+                    <div className="p-4 pt-0">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (onDetailsClick) onDetailsClick();
+                            }}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors font-bold uppercase tracking-wider text-xs animate-in fade-in slide-in-from-top-2"
+                        >
+                            Details anzeigen
+                        </button>
+                    </div>
+                )
+            }
             {/* Footer Status Strip (for list view without voting) */}
-            {!onVote && (
-                <div className={`h-1.5 w-full ${accepted ? 'bg-green-500' : 'bg-red-500'}`} />
-            )}
-        </div>
+            {
+                !onVote && (
+                    <div className={`h-1.5 w-full ${accepted ? 'bg-green-500' : 'bg-red-500'}`} />
+                )
+            }
+        </div >
     );
 }
