@@ -60,7 +60,6 @@ export function PollListItem({ poll }: { poll: Poll }) {
             related_links={poll.related_links}
             date={poll.poll_date}
             accepted={poll.accepted}
-            voteFlip={questionData?.vote_flip || false}
             onVote={handleVote}
             onDetailsClick={handleDetailsClick}
         />

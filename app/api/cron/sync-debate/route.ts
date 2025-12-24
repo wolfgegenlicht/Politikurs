@@ -20,10 +20,10 @@ export async function GET(request: Request) {
         // 2. Find a poll that needs processing
         // Strategy: Find poll with NO entry in poll_analysis
 
-        // Fetch recent polls
+        // Fetch recent polls with their simplified questions
         const { data: polls, error: pollError } = await supabase
             .from('polls')
-            .select('id, label, description')
+            .select('id, label, description, poll_questions(question)')
             .order('poll_date', { ascending: false })
             .limit(20);
 
@@ -47,16 +47,30 @@ export async function GET(request: Request) {
             return NextResponse.json({ message: 'All recent polls have analysis.' });
         }
 
-        console.log(`Analyzing debate for poll ${targetPoll.id}: ${targetPoll.label}`);
+        // Determine the text to analyze: Prefer the simplified question!
+        let textToAnalyze = targetPoll.label;
+        const questions = targetPoll.poll_questions;
+
+        if (questions) {
+            if (Array.isArray(questions) && questions.length > 0) {
+                textToAnalyze = questions[0].question;
+            } else if (!Array.isArray(questions) && (questions as any).question) {
+                textToAnalyze = (questions as any).question;
+            }
+        }
+
+        console.log(`Analyzing debate for poll ${targetPoll.id} based on: "${textToAnalyze}"`);
 
         // 3. Call AI for Analysis (Retry Logic)
-        const prompt = `Analysiere das politische Thema: "${targetPoll.label}".
+        const prompt = `Analysiere die politische Abstimmungsfrage: "${textToAnalyze}".
         
         Aufgabe:
-        1. "description": Fasse in 2 neutralen Sätze zusammen, worum es im Kern bei dieser Abstimmung/diesem Gesetz ging.
-        2. "pro": Nenne die 3 stärksten Argumente der BEFÜRWORTER (Regierung/Antragsteller).
-        3. "contra": Nenne die 3 stärksten Argumente der GEGNER (Opposition).
+        1. "description": Fasse in 2 neutralen Sätze zusammen, worum es im Kern bei dieser Frage geht.
+        2. "pro": Nenne die 3 stärksten Argumente für ein "JA" (Zustimmung zur Frage).
+        3. "contra": Nenne die 3 stärksten Argumente für ein "NEIN" (Ablehnung der Frage).
         4. "sources": Liste die URLs der verwendeten Quellen auf.
+        
+        WICHTIG: Die Argumente müssen sich direkt auf die Beantwortung der Frage mit "Ja" (Pro) oder "Nein" (Contra) beziehen.
         
         Verwende KEINE Zitations-Marker wie [1] in den Texten.
         
