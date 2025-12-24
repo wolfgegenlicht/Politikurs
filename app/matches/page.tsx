@@ -138,7 +138,7 @@ export default function MatchesPage() {
                                     />
                                 </div>
 
-                                <div className="mt-3 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <div className="mt-3 flex flex-col sm:flex-row sm:justify-between sm:items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest gap-1 sm:gap-0">
                                     <span>{match.match_count} Übereinstimmungen</span>
                                     <span>{match.total_votes} Abstimmungen</span>
                                 </div>
