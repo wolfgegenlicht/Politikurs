@@ -5,7 +5,6 @@ import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, Chevron
 import ReactMarkdown from 'react-markdown';
 import { Modal } from './Modal';
 import { createClient } from '@supabase/supabase-js';
-import { getPartyColor, ALLOWED_PARTIES } from '@/lib/partyUtils';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,8 +35,8 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
     const [deepExplanation, setDeepExplanation] = useState<string | null>(null);
     const [loadingDeep, setLoadingDeep] = useState(false);
 
-    const [partyStances, setPartyStances] = useState<any[]>([]);
-    const [loadingStances, setLoadingStances] = useState(false);
+    const [pollAnalysis, setPollAnalysis] = useState<any>(null);
+    const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
     const [userVote, setUserVote] = useState<'yes' | 'no' | 'skip' | null>(null);
     const [isDetailsMode, setIsDetailsMode] = useState(false);
@@ -106,23 +105,23 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
         }
     };
 
-    const loadPartyStances = async () => {
-        if (partyStances.length > 0) return;
-        setLoadingStances(true);
+    const loadPollAnalysis = async () => {
+        if (pollAnalysis) return;
+        setLoadingAnalysis(true);
         try {
             const { data } = await supabase
-                .from('party_stances')
+                .from('poll_analysis')
                 .select('*')
-                .eq('poll_id', id);
+                .eq('poll_id', id)
+                .single();
 
             if (data) {
-                // Sort by party name logic if needed, or rely on insert order/DB
-                setPartyStances(data);
+                setPollAnalysis(data);
             }
         } catch (e) {
-            console.error('Error loading stances:', e);
+            console.error('Error loading analysis:', e);
         } finally {
-            setLoadingStances(false);
+            setLoadingAnalysis(false);
         }
     };
 
@@ -163,12 +162,12 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             onClick={(e) => {
                                 e.preventDefault();
                                 setExplanationMode(1);
-                                loadPartyStances();
+                                loadPollAnalysis();
                             }}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-700 border-amber-200 border-[1px] bg-amber-50 hover:bg-amber-100 rounded-full transition-colors uppercase tracking-wider"
                         >
                             <Info size={14} strokeWidth={3} />
-                            Infos & Positionen
+                            Info & Argumente
                         </button>
                     </div>
                 )}
@@ -274,46 +273,72 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                         </div>
                     )}
 
-                    {/* Party Stances Section */}
                     <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Was sagen die Parteien?</h4>
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Debatte im Bundestag</h4>
 
-                        {loadingStances ? (
+                        {loadingAnalysis ? (
                             <div className="flex items-center justify-center py-8 text-slate-400">
-                                <span className="text-xs font-bold uppercase tracking-wider animate-pulse">Lade Positionen...</span>
+                                <span className="text-xs font-bold uppercase tracking-wider animate-pulse">Analysiere Debatte...</span>
                             </div>
-                        ) : partyStances.filter(s => ALLOWED_PARTIES.includes(s.party_name)).length > 0 ? (
-                            <div className="grid grid-cols-1 gap-4">
-                                {partyStances
-                                    .filter(stance => ALLOWED_PARTIES.includes(stance.party_name))
-                                    .map((stance) => (
-                                        <div key={stance.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <div
-                                                    className="w-3 h-3 rounded-full shrink-0"
-                                                    style={{ backgroundColor: getPartyColor(stance.party_name) }}
-                                                />
-                                                <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{stance.party_name}</span>
+                        ) : pollAnalysis ? (
+                            <div className="space-y-6">
+                                {/* Context Description */}
+                                {pollAnalysis.description && (
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl text-sm text-slate-600 dark:text-slate-300 italic border border-slate-100 dark:border-slate-800">
+                                        {pollAnalysis.description}
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* PRO Arguments */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 rounded-full bg-green-500" />
+                                            <h5 className="text-xs font-black uppercase tracking-wider text-green-600 dark:text-green-400">Dafür</h5>
+                                        </div>
+                                        {pollAnalysis.pro_arguments && pollAnalysis.pro_arguments.map((arg: string, i: number) => (
+                                            <div key={i} className="text-sm text-slate-700 dark:text-slate-200 bg-green-50/50 dark:bg-green-900/10 p-3 rounded-xl border border-green-100 dark:border-green-900/20">
+                                                {arg}
                                             </div>
-                                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-3">
-                                                {stance.stance.replace(/\[\d+\]/g, '')}
-                                            </p>
-                                            {stance.source_url && (
+                                        ))}
+                                    </div>
+
+                                    {/* CONTRA Arguments */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 rounded-full bg-red-500" />
+                                            <h5 className="text-xs font-black uppercase tracking-wider text-red-600 dark:text-red-400">Dagegen</h5>
+                                        </div>
+                                        {pollAnalysis.contra_arguments && pollAnalysis.contra_arguments.map((arg: string, i: number) => (
+                                            <div key={i} className="text-sm text-slate-700 dark:text-slate-200 bg-red-50/50 dark:bg-red-900/10 p-3 rounded-xl border border-red-100 dark:border-red-900/20">
+                                                {arg}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Sources */}
+                                {pollAnalysis.sources && pollAnalysis.sources.length > 0 && (
+                                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                        <div className="flex flex-wrap gap-3">
+                                            {pollAnalysis.sources.map((url: string, i: number) => (
                                                 <a
-                                                    href={stance.source_url}
+                                                    key={i}
+                                                    href={url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest"
+                                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors uppercase tracking-wider"
                                                 >
                                                     <FileText size={10} />
-                                                    Quelle
+                                                    Quelle {i + 1}
                                                 </a>
-                                            )}
+                                            ))}
                                         </div>
-                                    ))}
+                                    </div>
+                                )}
                             </div>
                         ) : (
-                            <p className="text-xs text-slate-400 italic">Zu dieser Abstimmung liegen noch keine detaillierten Parteipositionen vor.</p>
+                            <p className="text-xs text-slate-400 italic">Zu dieser Abstimmung liegt noch keine Debatten-Analyse vor.</p>
                         )}
                     </div>
                 </div>
