@@ -100,7 +100,7 @@ export async function GET(request: Request) {
                         messages: [
                             {
                                 role: 'system',
-                                content: 'Du bist ein neutraler Parlaments-Analyst. Antworte nur mit JSON. Keine Markdown-Formatierung.'
+                                content: 'Du bist ein neutraler Analyst. Deine EINZIGE Aufgabe ist es, valides JSON zurückzugeben. Antworte NICHT mit Einleitungssätzen oder Erklärungen. Antworte ausschliesslich mit dem JSON-Objekt.'
                             },
                             {
                                 role: 'user',
@@ -108,7 +108,7 @@ export async function GET(request: Request) {
                             }
                         ],
                         temperature: 0.1,
-                        max_tokens: 800
+                        max_tokens: 1000
                     })
                 });
 
@@ -132,6 +132,7 @@ export async function GET(request: Request) {
                 const lastBrace = content.lastIndexOf('}');
 
                 if (firstBrace === -1 || lastBrace === -1) {
+                    console.error('Invalid AI Response format:', content);
                     throw new Error('No JSON structure found in response');
                 }
 
