@@ -5,7 +5,7 @@ import { Info, ThumbsUp, ThumbsDown, Check, X, HelpCircle, ChevronRight, Chevron
 import ReactMarkdown from 'react-markdown';
 import { Modal } from './Modal';
 import { createClient } from '@supabase/supabase-js';
-import { getPartyColor } from '@/lib/partyUtils';
+import { getPartyColor, ALLOWED_PARTIES } from '@/lib/partyUtils';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -282,33 +282,35 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                             <div className="flex items-center justify-center py-8 text-slate-400">
                                 <span className="text-xs font-bold uppercase tracking-wider animate-pulse">Lade Positionen...</span>
                             </div>
-                        ) : partyStances.length > 0 ? (
+                        ) : partyStances.filter(s => ALLOWED_PARTIES.includes(s.party_name)).length > 0 ? (
                             <div className="grid grid-cols-1 gap-4">
-                                {partyStances.map((stance) => (
-                                    <div key={stance.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div
-                                                className="w-3 h-3 rounded-full shrink-0"
-                                                style={{ backgroundColor: getPartyColor(stance.party_name) }}
-                                            />
-                                            <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{stance.party_name}</span>
+                                {partyStances
+                                    .filter(stance => ALLOWED_PARTIES.includes(stance.party_name))
+                                    .map((stance) => (
+                                        <div key={stance.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div
+                                                    className="w-3 h-3 rounded-full shrink-0"
+                                                    style={{ backgroundColor: getPartyColor(stance.party_name) }}
+                                                />
+                                                <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{stance.party_name}</span>
+                                            </div>
+                                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-3">
+                                                {stance.stance.replace(/\[\d+\]/g, '')}
+                                            </p>
+                                            {stance.source_url && (
+                                                <a
+                                                    href={stance.source_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest"
+                                                >
+                                                    <FileText size={10} />
+                                                    Quelle
+                                                </a>
+                                            )}
                                         </div>
-                                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-3">
-                                            {stance.stance}
-                                        </p>
-                                        {stance.source_url && (
-                                            <a
-                                                href={stance.source_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-widest"
-                                            >
-                                                <FileText size={10} />
-                                                Quelle
-                                            </a>
-                                        )}
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         ) : (
                             <p className="text-xs text-slate-400 italic">Zu dieser Abstimmung liegen noch keine detaillierten Parteipositionen vor.</p>

@@ -4,13 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 export const maxDuration = 60; // Allow 60 seconds for execution (Serverless limit)
 export const dynamic = 'force-dynamic';
 
+import { ALLOWED_PARTIES } from '@/lib/partyUtils';
+
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // Parties to check
-const PARTIES = ['SPD', 'CDU/CSU', 'Bündnis 90/Die Grünen', 'AfD', 'Die Linke', 'BSW'];
+const PARTIES = ALLOWED_PARTIES;
 
 export async function GET(request: Request) {
     try {
@@ -67,6 +69,7 @@ export async function GET(request: Request) {
                 const prompt = `Suche nach der offiziellen Haltung der Partei ${party} zum Thema "${targetPoll.label}". 
                 Fasse sie in 2 einfachen Sätzen auf Deutsch zusammen. 
                 Gib NUR ein JSON Objekt zurück mit den Feldern "summary" (String) und "source_url" (String, URL zur Quelle).
+                Verwende KEINE Zitations-Marker wie [1] im Text.
                 Wenn keine klare Haltung zu finden ist, gib "summary": null zurück.`;
 
                 const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -122,10 +125,13 @@ export async function GET(request: Request) {
                 }
 
                 if (parsed && parsed.summary) {
+                    // Double check: Strip [1] citations if the AI ignored instructions
+                    const cleanSummary = parsed.summary.replace(/\[\d+\]/g, '').trim();
+
                     results.push({
                         poll_id: targetPoll.id,
                         party_name: party,
-                        stance: parsed.summary,
+                        stance: cleanSummary,
                         source_url: parsed.source_url
                     });
                 }

@@ -11,6 +11,14 @@ export const partyColors: Record<string, string> = {
     'fraktionslos': '#94a3b8' // Slate-400
 };
 
+export const ALLOWED_PARTIES = [
+    'CDU/CSU',
+    'AfD',
+    'SPD',
+    'Bündnis 90/Die Grünen',
+    'Die Linke'
+];
+
 export function getPartyColor(label: string): string {
     const lowerLabel = label.toLowerCase();
     for (const [key, color] of Object.entries(partyColors)) {
