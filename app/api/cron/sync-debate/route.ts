@@ -18,33 +18,32 @@ export async function GET(request: Request) {
         }
 
         // 2. Find a poll that needs processing
-        // Strategy: Find poll with NO entry in poll_analysis
+        // Strategy: Fetch recent polls AND check if they have analysis in one go
 
-        // Fetch recent polls with their simplified questions
         const { data: polls, error: pollError } = await supabase
             .from('polls')
-            .select('id, label, description, poll_questions(question)')
+            .select('id, label, description, poll_questions(question), poll_analysis(id)')
             .order('poll_date', { ascending: false })
-            .limit(20);
+            .limit(100);
 
         if (pollError || !polls) throw new Error(`Database error: ${pollError?.message}`);
 
         let targetPoll = null;
 
+        // Find the first poll that has NO poll_analysis entry
         for (const poll of polls) {
-            const { count } = await supabase
-                .from('poll_analysis')
-                .select('*', { count: 'exact', head: true })
-                .eq('poll_id', poll.id);
+            // @ts-ignore - Supabase types might not know about the relation join result structure immediately
+            const analysis = poll.poll_analysis;
 
-            if (count === 0) {
+            // If analysis is an empty array or null, it means no relation found
+            if (!analysis || (Array.isArray(analysis) && analysis.length === 0)) {
                 targetPoll = poll;
                 break;
             }
         }
 
         if (!targetPoll) {
-            return NextResponse.json({ message: 'All recent polls have analysis.' });
+            return NextResponse.json({ message: 'All 100 recent polls have analysis.' });
         }
 
         // Determine the text to analyze: Prefer the simplified question!
