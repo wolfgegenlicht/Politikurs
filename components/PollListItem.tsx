@@ -15,11 +15,13 @@ interface Poll {
         simplified_title?: string;
         explanation?: string;
         vote_flip?: boolean;
+        originator?: string;
     } | {
         question: string;
         simplified_title?: string;
         explanation?: string;
         vote_flip?: boolean;
+        originator?: string;
     }[] | null;
     related_links?: { label: string; url: string }[];
 }
@@ -62,6 +64,7 @@ export function PollListItem({ poll }: { poll: Poll }) {
             accepted={poll.accepted}
             onVote={handleVote}
             onDetailsClick={handleDetailsClick}
+            originator={questionData?.originator}
         />
     );
 }

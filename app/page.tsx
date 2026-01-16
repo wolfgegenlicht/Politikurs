@@ -5,6 +5,7 @@ import { PollCard } from '@/components/PollCard';
 import { PollListItem } from '../components/PollListItem';
 import { PollList } from '@/components/PollList';
 import { Footer } from '@/components/Footer';
+import { VoteDisclaimer } from '@/components/VoteDisclaimer';
 import { FilterBar } from '@/components/FilterBar';
 import { mapTopicsToTheme } from '@/lib/topicUtils';
 import { Metadata } from 'next';
@@ -190,7 +191,8 @@ export default async function HomePage({
           </React.Suspense>
         </div>
 
-        {/* Footer Info */}
+        <VoteDisclaimer />
+
         <Footer />
       </div>
     </div>

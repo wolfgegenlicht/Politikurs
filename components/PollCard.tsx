@@ -23,9 +23,10 @@ interface PollCardProps {
     accepted: boolean;
     onVote?: (vote: 'yes' | 'no' | 'skip') => void;
     onDetailsClick?: () => void; // NEW: Explicit navigation handler
+    originator?: string;
 }
 
-export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote, onDetailsClick }: PollCardProps) {
+export function PollCard({ id, question, label, simplifiedTitle, explanation, related_links, date, accepted, onVote, onDetailsClick, originator }: PollCardProps) {
     // ... rest of state ...
 
     // ... (keep handleVote logic as is, it updates local state) ...
@@ -148,6 +149,11 @@ export function PollCard({ id, question, label, simplifiedTitle, explanation, re
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                         {formattedDate}
                     </span>
+                    {originator && (
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-[10px] font-bold uppercase tracking-wider rounded-md">
+                            Von: {originator === 'Bundesregierung' ? 'CDU/CSU, SPD' : originator}
+                        </span>
+                    )}
                 </div>
 
                 {/* Main Heading: The Question */}

@@ -136,12 +136,12 @@ export async function GET(request: Request) {
                 // CHECK: Existiert bereits eine Frage? Wenn ja, NICHT neu generieren!
                 const { data: existingQuestion } = await supabase
                     .from('poll_questions')
-                    .select('id')
+                    .select('id, originator')
                     .eq('poll_id', poll.id)
                     .single();
 
-                if (!existingQuestion) {
-                    console.log(`Generating missing question for existing poll ${poll.id}...`);
+                if (!existingQuestion || !existingQuestion.originator) {
+                    console.log(`Generating missing question or originator for existing poll ${poll.id}...`);
                     await generateQuestionForPoll(poll.id, poll);
                 } else {
                     console.log(`Skipping AI generation for poll ${poll.id} (already exists).`);
@@ -257,12 +257,12 @@ async function generateQuestionForPoll(pollId: number, poll: any) {
     // 1. Check ob bereits vollständig generiert
     const { data: existing } = await supabase
         .from('poll_questions')
-        .select('question, simplified_title, explanation')
+        .select('question, simplified_title, explanation, originator')
         .eq('poll_id', pollId)
         .single();
 
     // Wenn alles da ist, fertig
-    if (existing?.question && existing?.simplified_title && existing?.explanation) {
+    if (existing?.question && existing?.simplified_title && existing?.explanation && existing?.originator) {
         return existing;
     }
 
@@ -305,18 +305,19 @@ REGLEN FÜR DIE LOGIK ("vote_flip"):
   - Wenn JA -> vote_flip = false
   - Wenn NEIN -> vote_flip = true
 
-WICHTIGSTE REGELN FÜR DIE ERKLÄRUNG ("explanation"):
-1. Erkläre nur den Inhalt und die Auswirkungen des Vorschlags in einfachen Worten.
-2. Erwähne NIEMALS das Ergebnis der Abstimmung (z.B. "abgelehnt", "angenommen" oder "entschieden").
-3. Erwähne NIEMALS Partei-Namen oder welche Gruppen dafür oder dagegen waren.
-4. Ignoriere Sätze im Quelltext, die über das Wahlergebnis informieren.
+WICHTIGSTE REGELN FÜR DEN URHEBER ("originator"):
+1. Extrahiere, wer den Antrag eingebracht hat (z.B. "CDU/CSU", "Bundesregierung", "AfD", "SPD", "Grüne", "FDP", "Die Linke", "BSW").
+2. Wenn es die Bundesregierung ist, schreibe "Bundesregierung".
+3. Wenn es mehrere Fraktionen sind, trenne sie mit Komma (z.B. "SPD, Grüne, FDP").
+4. Wenn es nicht klar erkennbar ist, setze null.
 
 FORMAT: Antworte NUR als valides JSON Objekt:
 {
   "simplified_title": "Kurzer Titel (max 10 Wörter)",
   "question": "Ja/Nein Frage (beginnend mit 'Sollen...', max 20 Wörter)",
   "explanation": "Neutrale, einfache Erklärung (Max 300 Zeichen). KEIN Ergebnis, KEINE Parteien!",
-  "vote_flip": boolean
+  "vote_flip": boolean,
+  "originator": "Name der Fraktion(en) oder 'Bundesregierung' oder null"
 }
 `;
 
@@ -386,6 +387,7 @@ FORMAT: Antworte NUR als valides JSON Objekt:
             simplified_title: result.simplified_title,
             explanation: result.explanation,
             vote_flip: result.vote_flip || false,
+            originator: result.originator,
             model_used: 'mistralai/devstral-2512:free'
         });
     }
