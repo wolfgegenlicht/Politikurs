@@ -40,7 +40,7 @@ export function VoteDisclaimer() {
 
             {/* Fixed Popup (First Visit) */}
             {showPopup && (
-                <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[50] w-[calc(100%-2rem)] md:w-96 animate-in slide-in-from-bottom-10 fade-in duration-700">
+                <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:top-auto md:left-auto md:translate-x-0 md:translate-y-0 md:bottom-8 md:right-8 z-[60] w-[calc(100%-2rem)] md:w-96 animate-in slide-in-from-bottom-10 fade-in duration-700">
                     <div
                         className="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-[0_8px_40px_rgb(0,0,0,0.12)] border border-slate-200 dark:border-slate-700 relative cursor-pointer hover:scale-[1.02] transition-transform"
                         onClick={handleOpenModal}
