@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         }
 
         const { searchParams } = new URL(request.url);
-        const limit = parseInt(searchParams.get('limit') || '10');
+        const limit = parseInt(searchParams.get('limit') || '5');
 
         // 1. Hole die neuesten Polls (User request: "next 10", etc.)
         const response = await fetch(
