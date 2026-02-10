@@ -357,7 +357,8 @@ FORMAT: Antworte NUR als valides JSON Objekt:
             });
 
             if (!response.ok) {
-                console.error(`OpenRouter API failed for poll ${pollId}: ${response.status}`);
+                const errorText = await response.text();
+                console.error(`OpenRouter API failed for poll ${pollId}: ${response.status} - ${errorText}`);
                 retries++;
                 continue;
             }
