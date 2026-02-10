@@ -1,5 +1,4 @@
 {
-    "questions_comment": "Force redeploy",
     "crons": [
         {
             "path": "/api/sync-polls?limit=5",
