@@ -17,7 +17,7 @@ export async function GET(request: Request) {
         const authHeader = request.headers.get('authorization');
         if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             // Optional: Allow local development without secret if needed, or strict check
-            // For now, strict check if CRON_SECRET is set (Production)
+            // For now, strict check if CRON_SECRET is set (Production) test again
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
