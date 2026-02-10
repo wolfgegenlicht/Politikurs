@@ -27,7 +27,7 @@ npm run lint             # Run ESLint
 ### API Routes for Data Sync
 ```bash
 # Sync polls from Abgeordnetenwatch API (manual trigger during development)
-curl http://localhost:3000/api/sync-polls?limit=50
+curl http://localhost:3000/api/sync-polls?limit=5
 
 # Generate debate analysis for a poll (manual trigger)
 curl http://localhost:3000/api/cron/sync-debate
@@ -131,7 +131,8 @@ Required in `.env.local`:
 
 ### Deployment
 - Hosted on Vercel
-- Cron jobs configured in `vercel.json` (daily at 4am and 5am UTC)
+- Cron jobs configured in `vercel.json` (daily debate sync at 5am UTC, poll sync hourly to prevent timeout)
+- Poll Sync Route: `/api/sync-polls?limit=5` (small batches to stay under 60s limit)
 - ISR enabled for dynamic pages with caching
 
 ## Working with the Codebase
