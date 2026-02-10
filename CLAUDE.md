@@ -90,7 +90,7 @@ This logic is implemented in:
 ### AI Integration
 
 **OpenRouter Models Used**:
-- `mistralai/devstral-2512:free`: Question generation (fast, free tier)
+- `google/gemini-2.0-flash-lite-preview-02-05:free`: Question generation (fast, free tier)
 - `perplexity/sonar`: Debate analysis with web search (requires credits)
 
 **AI Prompt Strategy**:

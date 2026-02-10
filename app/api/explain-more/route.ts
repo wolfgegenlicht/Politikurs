@@ -103,7 +103,7 @@ Halte dich STRENG an diese Regeln:
                 'X-Title': 'BundesCheck Deep Explain'
             },
             body: JSON.stringify({
-                model: 'mistralai/devstral-2512:free',
+                model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: `Hier ist der Text:\n"${contextText}"\n\nÜbersetze diesen Text in Leichte Sprache. Beachte alle Regeln.` }

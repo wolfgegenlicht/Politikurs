@@ -341,7 +341,7 @@ FORMAT: Antworte NUR als valides JSON Objekt:
                     'X-Title': 'Bundestag Votes'
                 },
                 body: JSON.stringify({
-                    model: 'mistralai/devstral-2512:free',
+                    model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
                     messages: [
                         {
                             role: 'system',
@@ -391,7 +391,7 @@ FORMAT: Antworte NUR als valides JSON Objekt:
             explanation: result.explanation,
             vote_flip: result.vote_flip || false,
             originator: result.originator,
-            model_used: 'mistralai/devstral-2512:free'
+            model_used: 'google/gemini-2.0-flash-lite-preview-02-05:free'
         });
     }
 
