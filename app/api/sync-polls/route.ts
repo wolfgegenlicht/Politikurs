@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+export const maxDuration = 60; // 5 minutes (Pro) or 10 seconds (Hobby). Set to 60 for safety.
+export const dynamic = 'force-dynamic';
+
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -19,7 +22,7 @@ export async function GET(request: Request) {
         }
 
         const { searchParams } = new URL(request.url);
-        const limit = parseInt(searchParams.get('limit') || '50');
+        const limit = parseInt(searchParams.get('limit') || '10');
 
         // 1. Hole die neuesten Polls (User request: "next 10", etc.)
         const response = await fetch(

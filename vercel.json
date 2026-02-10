@@ -1,7 +1,7 @@
 {
     "crons": [
         {
-            "path": "/api/sync-polls?limit=50",
+            "path": "/api/sync-polls?limit=10",
             "schedule": "0 4 * * *"
         },
         {
