@@ -3,10 +3,6 @@
         {
             "path": "/api/sync-polls?limit=5&v=2",
             "schedule": "0 * * * *"
-        },
-        {
-            "path": "/api/cron/sync-debate",
-            "schedule": "0 5 * * *"
         }
     ]
 }
